@@ -18,6 +18,9 @@ public class VideoEntry implements Parcelable {
     private int mHeight;
     private int mWidth;
 
+    public VideoEntry() {
+    }
+
     public VideoEntry(Cursor cursor) {
         if (cursor == null) {
             return;

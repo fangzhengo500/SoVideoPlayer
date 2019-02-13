@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 
 
 import com.loosu.sample.domain.VideoEntry;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataHelper {
+    @NonNull
     public static List<VideoEntry> getVideos(Context context) {
         String[] columns = {
                 MediaStore.Video.VideoColumns.DATA,
@@ -28,10 +30,9 @@ public class DataHelper {
 
         Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
-        List<VideoEntry> videoEntries = null;
+        List<VideoEntry> videoEntries = new ArrayList<>();
         Cursor cursor = context.getContentResolver().query(uri, columns, null, null, null);
         if (cursor != null) {
-            videoEntries = new ArrayList<>();
             while (cursor.moveToNext()) {
                 videoEntries.add(new VideoEntry(cursor));
             }

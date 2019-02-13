@@ -2,6 +2,7 @@ package com.loosu.sample.ui.fragment;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,12 +18,14 @@ import android.view.ViewGroup;
 
 import com.loosu.sample.R;
 import com.loosu.sample.adapter.SimpleVideoAdapter;
+import com.loosu.sample.adapter.base.recyclerview.IRecyclerItemClickListener;
 import com.loosu.sample.domain.VideoEntry;
+import com.loosu.sample.ui.activity.SimplePlayerActivity;
 import com.loosu.sample.utils.DataHelper;
 
 import java.util.List;
 
-public class VideoListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class VideoListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, IRecyclerItemClickListener {
     private static final String TAG = "VideoListFragment";
 
     private SwipeRefreshLayout mRefreshLayout;
@@ -68,6 +71,7 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
 
     private void initListener(View rootView, Bundle savedInstanceState) {
         mRefreshLayout.setOnRefreshListener(this);
+        mAdapter.setItemClickListener(this);
     }
 
     /**
@@ -84,6 +88,15 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
         }, 500);
     }
 
+    /**
+     * 列表条目点击
+     */
+    @Override
+    public void onItemClick(RecyclerView parent, int position, RecyclerView.ViewHolder holder, View view) {
+        Intent intent = SimplePlayerActivity.getStartIntent(getContext(), mAdapter.getItem(position));
+        startActivity(intent);
+    }
+
     private void refreshData() {
         final Context context = getContext();
 
@@ -94,6 +107,13 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
         }
 
         List<VideoEntry> videos = DataHelper.getVideos(context);
+
+        // 加一个假数据
+        VideoEntry videoEntry = new VideoEntry();
+        videoEntry.setData("http://jzvd.nathen.cn/c6e3dc12a1154626b3476d9bf3bd7266/6b56c5f0dc31428083757a45764763b0-5287d2089db37e62345123a1be272f8b.mp4");
+        videos.add(0, videoEntry);
+
         mAdapter.setDatas(videos);
     }
+
 }
