@@ -3,11 +3,13 @@ package com.loosu.sovideoplayer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ import java.util.Locale;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
+import tv.danmaku.ijk.media.player.IjkTimedText;
 import tv.danmaku.ijk.media.player.MediaInfo;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
 
@@ -32,34 +35,13 @@ public class IjkMediaPlayerTestActivity extends AppCompatActivity {
 
     private SurfaceView mSurfaceView;
     private TextView mTvInfo;
+    private TextView mTvProgress;
+    private SeekBar mSbProgress;
+
+    private Handler mHandler = new Handler();
 
     private IMediaPlayer mMediaPlayer = new IjkMediaPlayer();
     private String mDataSource;
-
-    private SurfaceHolder.Callback2 mSurfaceCallback = new SurfaceHolder.Callback2() {
-        @Override
-        public void surfaceRedrawNeeded(SurfaceHolder holder) {
-            KLog.d(TAG, "holder = " + holder);
-        }
-
-        @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-            KLog.i(TAG, "holder = " + holder);
-            mMediaPlayer.setDisplay(holder);
-        }
-
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            KLog.d(TAG, String.format(Locale.US, "holder = %s, format = %s, width = %d, height = %d",
-                    holder, PixelFormatUtil.formatToString(format), width, height));
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            KLog.w(TAG, "holder = " + holder);
-            mMediaPlayer.release();
-        }
-    };
 
     public static Intent getStartIntent(Context context, String dataSource) {
         Intent intent = new Intent(context, IjkMediaPlayerTestActivity.class);
@@ -80,6 +62,9 @@ public class IjkMediaPlayerTestActivity extends AppCompatActivity {
     private void findView(Bundle savedInstanceState) {
         mSurfaceView = findViewById(R.id.surface_view);
         mTvInfo = findViewById(R.id.tv_info);
+
+        mTvProgress = findViewById(R.id.tv_progress);
+        mSbProgress = findViewById(R.id.sb_progress);
     }
 
     private void init(Bundle savedInstanceState) {
@@ -88,16 +73,20 @@ public class IjkMediaPlayerTestActivity extends AppCompatActivity {
     }
 
     private void initView(Bundle savedInstanceState) {
-        if (mSurfaceView.isActivated()) {
-            mMediaPlayer.setDisplay(mSurfaceView.getHolder());
-        } else {
-        }
-
-        mSurfaceView.getHolder().addCallback(mSurfaceCallback);
         updateInfo(mMediaPlayer);
     }
 
     private void initListener(Bundle savedInstanceState) {
+        mSurfaceView.getHolder().addCallback(mSurfaceCallback);
+
+        mMediaPlayer.setOnPreparedListener(new IjkMediaPlayerListener());
+        mMediaPlayer.setOnCompletionListener(new IjkMediaPlayerListener());
+        mMediaPlayer.setOnBufferingUpdateListener(new IjkMediaPlayerListener());
+        mMediaPlayer.setOnSeekCompleteListener(new IjkMediaPlayerListener());
+        mMediaPlayer.setOnVideoSizeChangedListener(new IjkMediaPlayerListener());
+        mMediaPlayer.setOnErrorListener(new IjkMediaPlayerListener());
+        mMediaPlayer.setOnInfoListener(new IjkMediaPlayerListener());
+        mMediaPlayer.setOnTimedTextListener(new IjkMediaPlayerListener());
     }
 
     private void showMsg(String msg) {
@@ -107,7 +96,7 @@ public class IjkMediaPlayerTestActivity extends AppCompatActivity {
 
     public void updateInfo(IMediaPlayer mp) {
         StringBuffer sb = new StringBuffer();
-        sb.append("================ player info ================ \n")
+        sb.append("\n ================ player info ================ \n")
                 .append("data source: ").append(mp.getDataSource()).append('\n')
                 .append("w: ").append(mp.getVideoWidth()).append(", h: ").append(mp.getVideoHeight()).append('\n')
                 .append("is playing: ").append(mp.isPlaying()).append('\n')
@@ -129,7 +118,7 @@ public class IjkMediaPlayerTestActivity extends AppCompatActivity {
 
         String text = sb.toString();
         mTvInfo.setText(text);
-        KLog.d(TAG, text);
+        //KLog.d(TAG, text);
     }
 
     public String getTrace(Throwable t) {
@@ -200,6 +189,7 @@ public class IjkMediaPlayerTestActivity extends AppCompatActivity {
     public void onClickStart(View view) {
         try {
             mMediaPlayer.start();
+            mHandler.post(mUpdateProgressRunable);
         } catch (Exception e) {
             showMsg(getTrace(e));
         }
@@ -211,6 +201,7 @@ public class IjkMediaPlayerTestActivity extends AppCompatActivity {
         } catch (Exception e) {
             showMsg(getTrace(e));
         }
+        mHandler.removeCallbacks(mUpdateProgressRunable);
     }
 
     public void onClickPause(View view) {
@@ -219,6 +210,7 @@ public class IjkMediaPlayerTestActivity extends AppCompatActivity {
         } catch (Exception e) {
             showMsg(getTrace(e));
         }
+        mHandler.removeCallbacks(mUpdateProgressRunable);
     }
 
     public void onClickReset(View view) {
@@ -228,6 +220,7 @@ public class IjkMediaPlayerTestActivity extends AppCompatActivity {
         } catch (Exception e) {
             showMsg(getTrace(e));
         }
+        mHandler.removeCallbacks(mUpdateProgressRunable);
     }
 
     public void onClickRelease(View view) {
@@ -236,5 +229,113 @@ public class IjkMediaPlayerTestActivity extends AppCompatActivity {
         } catch (Exception e) {
             showMsg(getTrace(e));
         }
+        mHandler.removeCallbacks(mUpdateProgressRunable);
     }
+
+    private SurfaceHolder.Callback2 mSurfaceCallback = new SurfaceHolder.Callback2() {
+        @Override
+        public void surfaceRedrawNeeded(SurfaceHolder holder) {
+            KLog.d(TAG, "holder = " + holder);
+        }
+
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            KLog.i(TAG, "holder = " + holder);
+            mMediaPlayer.setDisplay(holder);
+        }
+
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            KLog.d(TAG, String.format(Locale.US, "holder = %s, format = %s, width = %d, height = %d",
+                    holder, PixelFormatUtil.formatToString(format), width, height));
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            KLog.w(TAG, "holder = " + holder);
+            mMediaPlayer.release();
+        }
+    };
+
+    private class IjkMediaPlayerListener implements IMediaPlayer.OnPreparedListener,
+            IMediaPlayer.OnCompletionListener, IMediaPlayer.OnBufferingUpdateListener,
+            IMediaPlayer.OnSeekCompleteListener, IMediaPlayer.OnVideoSizeChangedListener,
+            IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener,
+            IMediaPlayer.OnTimedTextListener {
+        @Override
+        public void onBufferingUpdate(IMediaPlayer mp, int percent) {
+            KLog.d(TAG, "percent = " + percent);
+            updateInfo(mMediaPlayer);
+        }
+
+        @Override
+        public void onCompletion(IMediaPlayer mp) {
+            KLog.i(TAG, "");
+            updateInfo(mMediaPlayer);
+        }
+
+        @Override
+        public boolean onError(IMediaPlayer mp, int what, int extra) {
+            mHandler.removeCallbacks(mUpdateProgressRunable);
+            boolean result = false;
+            KLog.e(TAG, String.format(Locale.US, "what = %s, extra = %d, result = %s",
+                    IjkMediaPlayerUtil.errorToString(getApplicationContext(), what), extra, result));
+            updateInfo(mMediaPlayer);
+            return result;
+        }
+
+        @Override
+        public boolean onInfo(IMediaPlayer mp, int what, int extra) {
+            boolean result = false;
+            KLog.i(TAG, String.format(Locale.US, "what = %s, extra = %d, result = %s",
+                    IjkMediaPlayerUtil.infoToString(getApplicationContext(), what), extra, result));
+            updateInfo(mMediaPlayer);
+            return result;
+        }
+
+        @Override
+        public void onPrepared(IMediaPlayer mp) {
+            KLog.i(TAG, "");
+            updateInfo(mMediaPlayer);
+        }
+
+        @Override
+        public void onSeekComplete(IMediaPlayer mp) {
+            KLog.i(TAG, "");
+            updateInfo(mMediaPlayer);
+            mHandler.removeCallbacks(mUpdateProgressRunable);
+        }
+
+        @Override
+        public void onTimedText(IMediaPlayer mp, IjkTimedText text) {
+            KLog.i(TAG, "");
+            updateInfo(mMediaPlayer);
+        }
+
+        @Override
+        public void onVideoSizeChanged(IMediaPlayer mp, int width, int height, int sar_num, int sar_den) {
+            KLog.i(TAG, String.format(Locale.US, "width = %d, height = %d, sar_num = %d, sar_den = %d"
+                    , width, height, sar_num, sar_den));
+            updateInfo(mMediaPlayer);
+        }
+    }
+
+    private Runnable mUpdateProgressRunable = new Runnable() {
+        @Override
+        public void run() {
+            long currentPosition = mMediaPlayer.getCurrentPosition();
+            long duration = mMediaPlayer.getDuration();
+
+            String cur = formatDuration(currentPosition);
+            String dur = formatDuration(duration);
+
+            mSbProgress.setMax(Integer.parseInt(dur));
+            mSbProgress.setProgress(Integer.parseInt(cur));
+
+            mTvProgress.setText(String.format("%s/%s", cur, dur));
+
+            mHandler.postDelayed(this, 300);
+        }
+    };
+
 }
