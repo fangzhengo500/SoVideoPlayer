@@ -11,14 +11,14 @@ import android.view.SurfaceView;
 
 import com.loosu.sample.R;
 import com.loosu.sample.domain.VideoEntry;
+import com.loosu.sovideoplayer.widget.SoVideoView;
 
-import java.io.IOException;
 
 public class SimplePlayerActivity extends AppCompatActivity {
 
     private static final String KEY_VIDEO_ENTRY = "key_video_entry";
 
-    private SurfaceView mSurfaceView;
+    private SoVideoView mVideoView;
     private VideoEntry mVideoEntry;
 
     private MediaPlayer mPlayer;
@@ -39,7 +39,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
     }
 
     private void findView(Bundle savedInstanceState) {
-        mSurfaceView = findViewById(R.id.surface_view);
+        mVideoView = findViewById(R.id.video_view);
     }
 
     private void init(Bundle savedInstanceState) {
@@ -49,35 +49,6 @@ public class SimplePlayerActivity extends AppCompatActivity {
     }
 
     private void initView(Bundle savedInstanceState) {
-        mSurfaceView.getHolder().addCallback(mSurfaceCallback);
+
     }
-
-    private SurfaceHolder.Callback2 mSurfaceCallback = new SurfaceHolder.Callback2() {
-        @Override
-        public void surfaceRedrawNeeded(SurfaceHolder holder) {
-
-        }
-
-        @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-            try {
-                mPlayer.setDisplay(holder);
-                mPlayer.setDataSource(mVideoEntry.getData());
-                mPlayer.prepare();
-                mPlayer.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            mPlayer.release();
-        }
-    };
 }

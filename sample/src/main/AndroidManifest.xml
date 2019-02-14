@@ -24,6 +24,7 @@
 
         <activity
             android:name=".ui.activity.SimplePlayerActivity"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/AppFullscreenTheme" />
     </application>
 </manifest>

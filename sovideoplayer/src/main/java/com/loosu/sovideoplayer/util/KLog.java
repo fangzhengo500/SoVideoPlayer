@@ -1,4 +1,4 @@
-package com.loosu.sample.utils;
+package com.loosu.sovideoplayer.util;
 
 import android.util.Log;
 
@@ -6,8 +6,6 @@ public class KLog {
     private static boolean IS_SHOW_LOG = true;
 
     private static final String DEFAULT_MESSAGE = "execute";
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private static final int JSON_INDENT = 4;
 
     private static final int V = 0x1;
     private static final int D = 0x2;
@@ -136,6 +134,5 @@ public class KLog {
                 Log.wtf(tag, logStr);
                 break;
         }
-
     }
 }
