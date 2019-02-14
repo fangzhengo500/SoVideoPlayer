@@ -20,8 +20,8 @@ import com.loosu.sample.R;
 import com.loosu.sample.adapter.SimpleVideoAdapter;
 import com.loosu.sample.adapter.base.recyclerview.IRecyclerItemClickListener;
 import com.loosu.sample.domain.VideoEntry;
-import com.loosu.sample.ui.activity.SimplePlayerActivity;
 import com.loosu.sample.utils.DataHelper;
+import com.loosu.sovideoplayer.IjkMediaPlayerTestActivity;
 
 import java.util.List;
 
@@ -93,7 +93,8 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
      */
     @Override
     public void onItemClick(RecyclerView parent, int position, RecyclerView.ViewHolder holder, View view) {
-        Intent intent = SimplePlayerActivity.getStartIntent(getContext(), mAdapter.getItem(position));
+        //Intent intent = SimplePlayerActivity.getStartIntent(getContext(), mAdapter.getItem(position));
+        Intent intent = IjkMediaPlayerTestActivity.getStartIntent(getContext(), mAdapter.getItem(position).getData());
         startActivity(intent);
     }
 

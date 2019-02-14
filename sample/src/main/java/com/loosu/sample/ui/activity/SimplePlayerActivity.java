@@ -6,8 +6,6 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 import com.loosu.sample.R;
 import com.loosu.sample.domain.VideoEntry;

@@ -19,7 +19,6 @@ import java.util.Locale;
 public class SoVideoView extends FrameLayout {
     private static final String TAG = "SoVideoView";
 
-
     private SurfaceView mSurfaceView;
 
     private String mDataSource;
@@ -38,6 +37,18 @@ public class SoVideoView extends FrameLayout {
         mSurfaceView = findViewById(R.id.surface_view);
 
         mSurfaceView.getHolder().addCallback(mSurfaceCallback);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        KLog.i(TAG, this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        KLog.w(TAG, this);
     }
 
     public void setDataSource(Uri uri) {
