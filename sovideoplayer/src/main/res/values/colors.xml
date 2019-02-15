@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="text_color_black">#555</color>
+    <color name="text_color_white">#EEEEEE</color>
+    <color name="text_color_gray">#AAA</color>
+</resources>

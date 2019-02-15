@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.loosu.sample.R;
 import com.loosu.sample.domain.VideoEntry;
+import com.loosu.sovideoplayer.playermanger.SoPlayerManager;
 import com.loosu.sovideoplayer.widget.SoVideoView;
 
 
@@ -19,7 +20,6 @@ public class SimplePlayerActivity extends AppCompatActivity {
     private SoVideoView mVideoView;
     private VideoEntry mVideoEntry;
 
-    private MediaPlayer mPlayer;
 
     public static Intent getStartIntent(Context context, VideoEntry videoEntry) {
         Intent intent = new Intent(context, SimplePlayerActivity.class);
@@ -36,6 +36,12 @@ public class SimplePlayerActivity extends AppCompatActivity {
         initView(savedInstanceState);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SoPlayerManager.getInstance().pause();
+    }
+
     private void findView(Bundle savedInstanceState) {
         mVideoView = findViewById(R.id.video_view);
     }
@@ -43,10 +49,9 @@ public class SimplePlayerActivity extends AppCompatActivity {
     private void init(Bundle savedInstanceState) {
         Intent intent = getIntent();
         mVideoEntry = intent.getParcelableExtra(KEY_VIDEO_ENTRY);
-        mPlayer = new MediaPlayer();
     }
 
     private void initView(Bundle savedInstanceState) {
-
+        mVideoView.setDataSource(mVideoEntry.getData());
     }
 }

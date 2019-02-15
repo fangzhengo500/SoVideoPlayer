@@ -8,9 +8,15 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.loosu.sovideoplayer.R;
+import com.loosu.sovideoplayer.playermanger.IPlayerManager;
+import com.loosu.sovideoplayer.playermanger.SoPlayerManager;
 import com.loosu.sovideoplayer.util.KLog;
 import com.loosu.sovideoplayer.util.PixelFormatUtil;
 
@@ -20,6 +26,10 @@ public class SoVideoView extends FrameLayout {
     private static final String TAG = "SoVideoView";
 
     private SurfaceView mSurfaceView;
+
+    private SeekBar mSbProgress;
+    private ImageView mBtnPlay;
+    private TextView mTvProgress;
 
     private String mDataSource;
 
@@ -36,7 +46,14 @@ public class SoVideoView extends FrameLayout {
         LayoutInflater.from(context).inflate(R.layout.view_so_video, this, true);
         mSurfaceView = findViewById(R.id.surface_view);
 
+        mSbProgress = findViewById(R.id.sb_progress);
+        mBtnPlay = findViewById(R.id.btn_play);
+        mTvProgress = findViewById(R.id.tv_progress);
+
         mSurfaceView.getHolder().addCallback(mSurfaceCallback);
+
+        mSbProgress.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+        mBtnPlay.setOnClickListener(mOnClickListener);
     }
 
     @Override
@@ -89,6 +106,35 @@ public class SoVideoView extends FrameLayout {
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
             KLog.w(TAG, "holder = " + holder);
+        }
+    };
+
+    private SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            IPlayerManager playerManager = SoPlayerManager.getInstance();
+            playerManager.seekTo(seekBar.getProgress());
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
+
+    private OnClickListener mOnClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            IPlayerManager playerManager = SoPlayerManager.getInstance();
+            playerManager.reset();
+            playerManager.setDataSource(mDataSource);
+            playerManager.prepare();
+            playerManager.setDisPlay(mSurfaceView.getHolder());
         }
     };
 }

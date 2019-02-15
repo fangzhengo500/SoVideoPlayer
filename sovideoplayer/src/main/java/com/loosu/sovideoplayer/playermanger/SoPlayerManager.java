@@ -9,6 +9,8 @@ public class SoPlayerManager extends AbsPlayerManger {
 
     private IMediaPlayer mMediaPlayer;
 
+    private Listener mListener;
+
     private SoPlayerManager() {
         mMediaPlayer = new IjkMediaPlayer();
     }
@@ -23,7 +25,6 @@ public class SoPlayerManager extends AbsPlayerManger {
         }
         return sInstance;
     }
-
 
     @Override
     public IMediaPlayer getMediaPlayer() {

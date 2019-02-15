@@ -18,8 +18,11 @@ import android.view.ViewGroup;
 
 import com.loosu.sample.R;
 import com.loosu.sample.adapter.SimpleVideoAdapter;
+import com.loosu.sample.adapter.VideoViewAdapter;
+import com.loosu.sample.adapter.base.recyclerview.ARecyclerAdapter;
 import com.loosu.sample.adapter.base.recyclerview.IRecyclerItemClickListener;
 import com.loosu.sample.domain.VideoEntry;
+import com.loosu.sample.ui.activity.SimplePlayerActivity;
 import com.loosu.sample.utils.DataHelper;
 import com.loosu.sovideoplayer.IjkMediaPlayerTestActivity;
 
@@ -31,7 +34,7 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
     private SwipeRefreshLayout mRefreshLayout;
     private RecyclerView mViewList;
 
-    private SimpleVideoAdapter mAdapter;
+    private ARecyclerAdapter mAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +57,7 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private void init(Bundle savedInstanceState) {
-        mAdapter = new SimpleVideoAdapter(null);
+        mAdapter = new VideoViewAdapter(null);
         refreshData();
     }
 
@@ -93,8 +96,8 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
      */
     @Override
     public void onItemClick(RecyclerView parent, int position, RecyclerView.ViewHolder holder, View view) {
-        //Intent intent = SimplePlayerActivity.getStartIntent(getContext(), mAdapter.getItem(position));
-        Intent intent = IjkMediaPlayerTestActivity.getStartIntent(getContext(), mAdapter.getItem(position).getData());
+        Intent intent = SimplePlayerActivity.getStartIntent(getContext(), (VideoEntry) mAdapter.getItem(position));
+        //Intent intent = IjkMediaPlayerTestActivity.getStartIntent(getContext(), mAdapter.getItem(position).getData());
         startActivity(intent);
     }
 
