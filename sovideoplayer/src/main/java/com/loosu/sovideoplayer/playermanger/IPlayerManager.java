@@ -35,6 +35,10 @@ public interface IPlayerManager {
 
     public void seekTo(long seek);
 
+    public long getCurrentVideoDuration();
+
+    public long getCurrentVideoPosition();
+
     public interface Listener {
 
         public void onBufferingUpdate(@IntRange(from = 0, to = 100) int percent);

@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -25,7 +24,7 @@ import java.util.Locale;
 public class SoVideoView extends FrameLayout {
     private static final String TAG = "SoVideoView";
 
-    private SurfaceView mSurfaceView;
+    private AutoFixSurfaceView mSurfaceView;
 
     private SeekBar mSbProgress;
     private ImageView mBtnPlay;
@@ -85,6 +84,43 @@ public class SoVideoView extends FrameLayout {
         return mDataSource;
     }
 
+    private IPlayerManager.Listener mPlayerLisenter = new IPlayerManager.Listener() {
+        @Override
+        public void onBufferingUpdate(int percent) {
+
+        }
+
+        @Override
+        public void onCompletion() {
+
+        }
+
+        @Override
+        public boolean onError(int what, int extra) {
+            return true;
+        }
+
+        @Override
+        public boolean onInfo(int what, int extra) {
+            return true;
+        }
+
+        @Override
+        public void onPrepared() {
+
+        }
+
+        @Override
+        public void onSeekComplete() {
+
+        }
+
+        @Override
+        public void onVideoSizeChanged(int width, int height, int sar_num, int sar_den) {
+            mSurfaceView.setAspectRatio(width, height);
+        }
+    };
+
 
     private SurfaceHolder.Callback2 mSurfaceCallback = new SurfaceHolder.Callback2() {
         @Override
@@ -113,7 +149,9 @@ public class SoVideoView extends FrameLayout {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             IPlayerManager playerManager = SoPlayerManager.getInstance();
-            playerManager.seekTo(seekBar.getProgress());
+
+            long seek = (long) (playerManager.getCurrentVideoDuration() * progress * 1f / seekBar.getMax());
+            playerManager.seekTo(seek);
         }
 
         @Override
@@ -130,11 +168,12 @@ public class SoVideoView extends FrameLayout {
     private OnClickListener mOnClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            IPlayerManager playerManager = SoPlayerManager.getInstance();
+            SoPlayerManager playerManager = SoPlayerManager.getInstance();
             playerManager.reset();
             playerManager.setDataSource(mDataSource);
             playerManager.prepare();
             playerManager.setDisPlay(mSurfaceView.getHolder());
+            playerManager.setListener(mPlayerLisenter);
         }
     };
 }
