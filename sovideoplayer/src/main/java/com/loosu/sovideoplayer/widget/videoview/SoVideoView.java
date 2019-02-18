@@ -1,4 +1,4 @@
-package com.loosu.sovideoplayer.widget;
+package com.loosu.sovideoplayer.widget.videoview;
 
 import android.content.Context;
 import android.net.Uri;
@@ -18,17 +18,17 @@ import com.loosu.sovideoplayer.playermanger.IPlayerManager;
 import com.loosu.sovideoplayer.playermanger.SoPlayerManager;
 import com.loosu.sovideoplayer.util.KLog;
 import com.loosu.sovideoplayer.util.PixelFormatUtil;
+import com.loosu.sovideoplayer.widget.AutoFixSurfaceView;
+import com.loosu.sovideoplayer.widget.videocontroller.MediaController;
 
 import java.util.Locale;
 
-public class SoVideoView extends FrameLayout {
+public class SoVideoView extends FrameLayout implements MediaController.MediaPlayerControl {
     private static final String TAG = "SoVideoView";
 
     private AutoFixSurfaceView mSurfaceView;
 
-    private SeekBar mSbProgress;
-    private ImageView mBtnPlay;
-    private TextView mTvProgress;
+    private MediaController mMediaController;
 
     private String mDataSource;
 
@@ -45,14 +45,8 @@ public class SoVideoView extends FrameLayout {
         LayoutInflater.from(context).inflate(R.layout.view_so_video, this, true);
         mSurfaceView = findViewById(R.id.surface_view);
 
-        mSbProgress = findViewById(R.id.sb_progress);
-        mBtnPlay = findViewById(R.id.btn_play);
-        mTvProgress = findViewById(R.id.tv_progress);
-
         mSurfaceView.getHolder().addCallback(mSurfaceCallback);
 
-        mSbProgress.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
-        mBtnPlay.setOnClickListener(mOnClickListener);
     }
 
     @Override
@@ -82,6 +76,77 @@ public class SoVideoView extends FrameLayout {
 
     public String getDataSource() {
         return mDataSource;
+    }
+
+    public void setMediaController(MediaController controller) {
+        if (mMediaController != null) {
+            mMediaController.detachMediaPlayer();
+        }
+        mMediaController = controller;
+        attachMediaController();
+    }
+
+    private void attachMediaController() {
+        if (mMediaController != null) {
+            mMediaController.attachMediaPlayer(this);
+            mMediaController.setAnchorView(this);
+            mMediaController.setEnabled(true);
+        }
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public int getDuration() {
+        return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return 0;
+    }
+
+    @Override
+    public void seekTo(int pos) {
+
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return false;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return false;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
     }
 
     private IPlayerManager.Listener mPlayerLisenter = new IPlayerManager.Listener() {
@@ -121,7 +186,6 @@ public class SoVideoView extends FrameLayout {
         }
     };
 
-
     private SurfaceHolder.Callback2 mSurfaceCallback = new SurfaceHolder.Callback2() {
         @Override
         public void surfaceRedrawNeeded(SurfaceHolder holder) {
@@ -145,35 +209,4 @@ public class SoVideoView extends FrameLayout {
         }
     };
 
-    private SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            IPlayerManager playerManager = SoPlayerManager.getInstance();
-
-            long seek = (long) (playerManager.getCurrentVideoDuration() * progress * 1f / seekBar.getMax());
-            playerManager.seekTo(seek);
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-
-        }
-    };
-
-    private OnClickListener mOnClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            SoPlayerManager playerManager = SoPlayerManager.getInstance();
-            playerManager.reset();
-            playerManager.setDataSource(mDataSource);
-            playerManager.prepare();
-            playerManager.setDisPlay(mSurfaceView.getHolder());
-            playerManager.setListener(mPlayerLisenter);
-        }
-    };
 }

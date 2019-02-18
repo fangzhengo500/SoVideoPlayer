@@ -2,12 +2,14 @@ package com.loosu.sample.adapter;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.view.ViewGroup;
 
 import com.loosu.sample.R;
 import com.loosu.sample.adapter.base.recyclerview.ARecyclerAdapter;
 import com.loosu.sample.adapter.base.recyclerview.RecyclerHolder;
 import com.loosu.sample.domain.VideoEntry;
-import com.loosu.sovideoplayer.widget.SoVideoView;
+import com.loosu.sovideoplayer.widget.videocontroller.SimplePreviewController;
+import com.loosu.sovideoplayer.widget.videoview.SoVideoView;
 
 import java.util.List;
 
@@ -22,13 +24,21 @@ public class VideoViewAdapter extends ARecyclerAdapter<VideoEntry> {
     }
 
     @Override
+    public RecyclerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RecyclerHolder holder = super.onCreateViewHolder(parent, viewType);
+        SoVideoView videoView = holder.getView(R.id.video_view);
+        videoView.setMediaController(new SimplePreviewController(parent.getContext()));
+        return holder;
+    }
+
+    @Override
     protected void onBindViewData(RecyclerHolder holder, int position, List<VideoEntry> datas) {
         Context context = holder.itemView.getContext();
+        SoVideoView videoView = holder.getView(R.id.video_view);
 
         VideoEntry videoEntry = getItem(position);
-
-        SoVideoView videoView = holder.getView(R.id.video_view);
         videoView.setDataSource(videoEntry.getData());
+
     }
 
     @Override

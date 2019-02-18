@@ -2,7 +2,6 @@ package com.loosu.sample.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.loosu.sample.R;
 import com.loosu.sample.domain.VideoEntry;
 import com.loosu.sovideoplayer.playermanger.SoPlayerManager;
-import com.loosu.sovideoplayer.widget.SoVideoView;
+import com.loosu.sovideoplayer.widget.videoview.SoVideoView;
 
 
 public class SimplePlayerActivity extends AppCompatActivity {
