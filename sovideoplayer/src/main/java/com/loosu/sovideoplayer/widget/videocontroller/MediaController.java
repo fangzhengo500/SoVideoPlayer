@@ -2,8 +2,10 @@ package com.loosu.sovideoplayer.widget.videocontroller;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
 
 
 public abstract class MediaController extends FrameLayout {
@@ -50,7 +52,7 @@ public abstract class MediaController extends FrameLayout {
                     ViewGroup.LayoutParams.MATCH_PARENT);
         }
     }
-
+    protected abstract View makeControllerView();
 
     public interface MediaPlayerControl {
         void start();

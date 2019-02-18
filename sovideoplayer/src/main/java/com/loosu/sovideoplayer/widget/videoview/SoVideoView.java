@@ -7,15 +7,9 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.TextView;
-
 import com.loosu.sovideoplayer.R;
 import com.loosu.sovideoplayer.playermanger.IPlayerManager;
-import com.loosu.sovideoplayer.playermanger.SoPlayerManager;
 import com.loosu.sovideoplayer.util.KLog;
 import com.loosu.sovideoplayer.util.PixelFormatUtil;
 import com.loosu.sovideoplayer.widget.AutoFixSurfaceView;
