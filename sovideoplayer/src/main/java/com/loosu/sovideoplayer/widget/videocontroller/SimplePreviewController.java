@@ -1,14 +1,18 @@
 package com.loosu.sovideoplayer.widget.videocontroller;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.loosu.sovideoplayer.R;
+import com.loosu.sovideoplayer.widget.videoview.SoVideoView;
 
 public class SimplePreviewController extends MediaController {
     private static final String TAG = "SimplePreviewController";
@@ -115,7 +119,15 @@ public class SimplePreviewController extends MediaController {
     private final View.OnClickListener mBtnFullscreenClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
+            Activity activity = (Activity) getContext();
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 
+            SoVideoView videoView = new SoVideoView(activity, true);
+            videoView.setMediaController(new SimplePreviewController(activity));
+            ViewGroup contentView = activity.findViewById(android.R.id.content);
+            contentView.addView(videoView,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
         }
     };
 

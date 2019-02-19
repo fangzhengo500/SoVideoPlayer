@@ -26,8 +26,14 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
 
     private MediaController mMediaController;
 
+    private boolean isPrepared = false;
     private String mDataSource;
     private int mPercent;
+
+    public SoVideoView(@NonNull Context context, boolean isPrepared) {
+        this(context, null);
+        this.isPrepared = isPrepared;
+    }
 
     public SoVideoView(@NonNull Context context) {
         this(context, null);
@@ -92,11 +98,15 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
     @Override
     public void start() {
         SoPlayerManager pm = SoPlayerManager.getInstance();
-        pm.reset();
-        pm.setDataSource(mDataSource);
-        pm.prepare();
+        if (isPrepared) {
+            pm.start();
+        }else {
+            pm.reset();
+            pm.setDataSource(mDataSource);
+            pm.prepare();
+            pm.setListener(mPlayerLisenter);
+        }
         pm.setDisPlay(mSurfaceView.getHolder());
-        pm.setListener(mPlayerLisenter);
     }
 
     @Override
@@ -162,6 +172,7 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
 
         @Override
         public boolean onError(int what, int extra) {
+            isPrepared = false;
             return true;
         }
 
@@ -172,7 +183,7 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
 
         @Override
         public void onPrepared() {
-
+            isPrepared = true;
         }
 
         @Override
