@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_dark">
+    tools:background="@android:color/holo_orange_light">
 
     <!-- top-->
     <TextView
@@ -32,6 +32,8 @@
 
     <!-- bottom -->
     <LinearLayout
+        android:id="@+id/layout_bottom"
+        android:background="@drawable/shadow_background_bottom_to_top_drawable"
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:layout_gravity="bottom"

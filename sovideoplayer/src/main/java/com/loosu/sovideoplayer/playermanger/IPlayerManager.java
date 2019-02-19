@@ -35,6 +35,8 @@ public interface IPlayerManager {
 
     public void seekTo(long seek);
 
+    public boolean isPlaying();
+
     public long getCurrentVideoDuration();
 
     public long getCurrentVideoPosition();

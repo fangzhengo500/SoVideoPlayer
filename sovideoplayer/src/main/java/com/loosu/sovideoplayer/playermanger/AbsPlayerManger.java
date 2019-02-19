@@ -62,6 +62,7 @@ public abstract class AbsPlayerManger implements IPlayerManager {
 
     @Override
     public void setDisPlay(SurfaceHolder holder) {
+        KLog.d(TAG, "holder = " + holder);
         try {
             getMediaPlayer().setDisplay(holder);
         } catch (Exception e) {
@@ -121,6 +122,16 @@ public abstract class AbsPlayerManger implements IPlayerManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean isPlaying() {
+        try {
+            return getMediaPlayer().isPlaying();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
@@ -216,4 +227,5 @@ public abstract class AbsPlayerManger implements IPlayerManager {
             videoSizeChanged(width, height, sar_num, sar_den);
         }
     };
+
 }

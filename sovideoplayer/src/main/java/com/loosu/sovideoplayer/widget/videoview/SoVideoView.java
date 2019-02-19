@@ -8,8 +8,10 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.widget.FrameLayout;
+
 import com.loosu.sovideoplayer.R;
 import com.loosu.sovideoplayer.playermanger.IPlayerManager;
+import com.loosu.sovideoplayer.playermanger.SoPlayerManager;
 import com.loosu.sovideoplayer.util.KLog;
 import com.loosu.sovideoplayer.util.PixelFormatUtil;
 import com.loosu.sovideoplayer.widget.AutoFixSurfaceView;
@@ -25,6 +27,7 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
     private MediaController mMediaController;
 
     private String mDataSource;
+    private int mPercent;
 
     public SoVideoView(@NonNull Context context) {
         this(context, null);
@@ -38,9 +41,7 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.view_so_video, this, true);
         mSurfaceView = findViewById(R.id.surface_view);
-
         mSurfaceView.getHolder().addCallback(mSurfaceCallback);
-
     }
 
     @Override
@@ -82,7 +83,7 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
 
     private void attachMediaController() {
         if (mMediaController != null) {
-            mMediaController.attachMediaPlayer(this);
+            mMediaController.setMediaPlayer(this);
             mMediaController.setAnchorView(this);
             mMediaController.setEnabled(true);
         }
@@ -90,37 +91,42 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
 
     @Override
     public void start() {
-
+        SoPlayerManager pm = SoPlayerManager.getInstance();
+        pm.reset();
+        pm.setDataSource(mDataSource);
+        pm.prepare();
+        pm.setDisPlay(mSurfaceView.getHolder());
+        pm.setListener(mPlayerLisenter);
     }
 
     @Override
     public void pause() {
-
+        SoPlayerManager.getInstance().pause();
     }
 
     @Override
-    public int getDuration() {
-        return 0;
+    public long getDuration() {
+        return SoPlayerManager.getInstance().getCurrentVideoDuration();
     }
 
     @Override
-    public int getCurrentPosition() {
-        return 0;
+    public long getCurrentPosition() {
+        return SoPlayerManager.getInstance().getCurrentVideoPosition();
     }
 
     @Override
-    public void seekTo(int pos) {
-
+    public void seekTo(long pos) {
+        SoPlayerManager.getInstance().seekTo(pos);
     }
 
     @Override
     public boolean isPlaying() {
-        return false;
+        return SoPlayerManager.getInstance().isPlaying();
     }
 
     @Override
     public int getBufferPercentage() {
-        return 0;
+        return mPercent;
     }
 
     @Override
@@ -146,7 +152,7 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
     private IPlayerManager.Listener mPlayerLisenter = new IPlayerManager.Listener() {
         @Override
         public void onBufferingUpdate(int percent) {
-
+            mPercent = percent;
         }
 
         @Override
@@ -189,6 +195,9 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
             KLog.i(TAG, "holder = " + holder);
+//            KLog.d(TAG, "surface 设置显示");
+//            SoPlayerManager pm = SoPlayerManager.getInstance();
+//            pm.setDisPlay(holder);
         }
 
         @Override
