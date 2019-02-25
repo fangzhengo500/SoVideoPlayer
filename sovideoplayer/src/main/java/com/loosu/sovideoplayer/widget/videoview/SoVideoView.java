@@ -48,6 +48,9 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
         LayoutInflater.from(context).inflate(R.layout.view_so_video, this, true);
         mSurfaceView = findViewById(R.id.surface_view);
         mSurfaceView.getHolder().addCallback(mSurfaceCallback);
+
+        SoPlayerManager playerManager = SoPlayerManager.getInstance();
+        mSurfaceView.setAspectRatio(playerManager.getMediaPlayer().getVideoWidth(), playerManager.getMediaPlayer().getVideoHeight());
     }
 
     @Override
@@ -100,7 +103,7 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
         SoPlayerManager pm = SoPlayerManager.getInstance();
         if (isPrepared) {
             pm.start();
-        }else {
+        } else {
             pm.reset();
             pm.setDataSource(mDataSource);
             pm.prepare();

@@ -1,9 +1,11 @@
 package com.loosu.sovideoplayer.widget.videocontroller;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.loosu.sovideoplayer.R;
+import com.loosu.sovideoplayer.util.SystemUiUtil;
 import com.loosu.sovideoplayer.widget.videoview.SoVideoView;
 
 public class SimplePreviewController extends MediaController {
@@ -119,15 +122,45 @@ public class SimplePreviewController extends MediaController {
     private final View.OnClickListener mBtnFullscreenClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            Activity activity = (Activity) getContext();
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            final Activity activity = (Activity) getContext();
+            if (activity instanceof AppCompatActivity) {
+                ActionBar actionBar = activity.getActionBar();
+                if (actionBar != null) {
+                    actionBar.hide();
+                }
+                android.support.v7.app.ActionBar supportActionBar = ((AppCompatActivity) activity).getSupportActionBar();
+                if (supportActionBar != null) {
+                    supportActionBar.hide();
+                }
 
-            SoVideoView videoView = new SoVideoView(activity, true);
-            videoView.setMediaController(new SimplePreviewController(activity));
+            } else {
+                ActionBar actionBar = activity.getActionBar();
+                if (actionBar != null) {
+                    actionBar.hide();
+                }
+
+            }
+
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            SystemUiUtil.toggleHideyBar(activity);
+            final FullscreenGestureController controller = new FullscreenGestureController(activity, "Title");
+            final SoVideoView videoView = new SoVideoView(activity, true);
+            videoView.setMediaController(controller);
             ViewGroup contentView = activity.findViewById(android.R.id.content);
             contentView.addView(videoView,
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
+
+            controller.setBackClickListener(new FullscreenGestureController.OnBackClickListener() {
+                @Override
+                public void onBackClick() {
+                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    controller.detachMediaPlayer();
+                    ViewGroup contentView = activity.findViewById(android.R.id.content);
+                    contentView.removeView(videoView);
+                    SystemUiUtil.toggleHideyBar(activity);
+                }
+            });
         }
     };
 
