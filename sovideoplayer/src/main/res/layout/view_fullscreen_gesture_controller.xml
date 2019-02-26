@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:background="@android:color/black">
 
     <!-- top -->
@@ -45,7 +45,7 @@
     <LinearLayout
         android:id="@+id/layout_bottom"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="40dp"
         android:layout_gravity="bottom"
         android:background="@drawable/shadow_background_bottom_to_top_drawable"
         android:gravity="center_vertical"
@@ -80,12 +80,12 @@
             android:textSize="@dimen/text_size_small" />
 
         <ImageView
-            android:id="@+id/btn_fullscreen"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:id="@+id/btn_fullscreen_exit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginLeft="10dp"
-            android:padding="3dp"
-            android:src="@drawable/ic_fullscreen" />
+            android:padding="5dp"
+            android:src="@drawable/ic_fullscreen_exit" />
     </LinearLayout>
 
     <com.loosu.sovideoplayer.widget.SoProgressBar

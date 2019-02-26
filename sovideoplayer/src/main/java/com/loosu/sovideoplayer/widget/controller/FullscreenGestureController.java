@@ -38,6 +38,7 @@ public class FullscreenGestureController extends AbsGestureController {
     private TextView mTvProgress;
     private TextView mTvDuration;
     private SeekBar mSbProgress;
+    private View mBtnFullscreenExit;
 
     private String mTileStr;
 
@@ -102,9 +103,11 @@ public class FullscreenGestureController extends AbsGestureController {
         mTvProgress = root.findViewById(R.id.tv_progress);
         mTvDuration = root.findViewById(R.id.tv_duration);
         mSbProgress = root.findViewById(R.id.sb_progress);
+        mBtnFullscreenExit = root.findViewById(R.id.btn_fullscreen_exit);
 
         mBtnBack.setOnClickListener(mOnClickListener);
         mBtnPlay.setOnClickListener(mOnClickListener);
+        mBtnFullscreenExit.setOnClickListener(mOnClickListener);
         mSbProgress.setOnSeekBarChangeListener(mSeekBarChangeListener);
         this.setOnClickListener(mOnClickListener);
     }
@@ -117,6 +120,35 @@ public class FullscreenGestureController extends AbsGestureController {
         } else {
             mBtnPlay.setImageResource(R.drawable.btn_play_drawable);
         }
+    }
+
+    @Override
+    protected int setProgress() {
+        final MediaPlayerControl player = getPlayer();
+        if (player == null || mDragging) {
+            return 0;
+        }
+        long position = player.getCurrentPosition();
+        long duration = player.getDuration();
+
+        if (mSbProgress != null) {
+            if (duration > 0) {
+                // use long to avoid overflow
+                int pos = (int) (mSbProgress.getMax() * position / duration);
+                mSbProgress.setProgress(pos);
+            }
+            // percent (1-100)
+            int percent = player.getBufferPercentage();
+            mSbProgress.setSecondaryProgress(percent);
+        }
+
+        if (mTvProgress != null) {
+            mTvProgress.setText(stringForTime(position));
+        }
+        if (mTvDuration != null) {
+            mTvDuration.setText(stringForTime(duration));
+        }
+        return (int) position;
     }
 
     public void setBackClickListener(OnBackClickListener backClickListener) {
@@ -148,6 +180,8 @@ public class FullscreenGestureController extends AbsGestureController {
                 onClickBtnBack(v);
             } else if (viewId == R.id.btn_play) {
                 onClickBtnPlay();
+            } else if (viewId == R.id.btn_fullscreen_exit) {
+                onClickBtnBack(v);
             }
         }
     };
