@@ -1,4 +1,4 @@
-package com.loosu.sovideoplayer.widget.videocontroller;
+package com.loosu.sovideoplayer.widget.controller;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -145,12 +145,16 @@ public class SimplePreviewController extends MediaController {
             SystemUiUtil.toggleHideyBar(activity);
             final FullscreenGestureController controller = new FullscreenGestureController(activity, "Title");
             final SoVideoView videoView = new SoVideoView(activity, true);
+
             videoView.setMediaController(controller);
             ViewGroup contentView = activity.findViewById(android.R.id.content);
             contentView.addView(videoView,
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
 
+            controller.setFocusable(true);
+            controller.setFocusableInTouchMode(true);
+            controller.requestFocus();
             controller.setBackClickListener(new FullscreenGestureController.OnBackClickListener() {
                 @Override
                 public void onBackClick() {

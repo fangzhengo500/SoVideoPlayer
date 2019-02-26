@@ -8,4 +8,9 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:singleLine">true</item>
     </style>
+
+    <style name="ProgressBarVertical">
+        <item name="android:progressDrawable">@drawable/vertical_progress</item>
+        <item name="android:indeterminateOnly">false</item>
+    </style>
 </resources>

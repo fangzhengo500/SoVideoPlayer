@@ -15,7 +15,7 @@ import com.loosu.sovideoplayer.playermanger.SoPlayerManager;
 import com.loosu.sovideoplayer.util.KLog;
 import com.loosu.sovideoplayer.util.PixelFormatUtil;
 import com.loosu.sovideoplayer.widget.AutoFixSurfaceView;
-import com.loosu.sovideoplayer.widget.videocontroller.MediaController;
+import com.loosu.sovideoplayer.widget.controller.MediaController;
 
 import java.util.Locale;
 

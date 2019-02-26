@@ -1,7 +1,9 @@
-package com.loosu.sovideoplayer.widget.videocontroller;
+package com.loosu.sovideoplayer.widget.controller;
 
 import android.content.Context;
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,15 +11,23 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.loosu.sovideoplayer.R;
+import com.loosu.sovideoplayer.util.KLog;
+import com.loosu.sovideoplayer.widget.SoProgressBar;
+import com.loosu.sovideoplayer.widget.controller.detector.FullscreenClickDetector;
+import com.loosu.sovideoplayer.widget.controller.detector.FullscreenVolumeDetector;
 
 
 public class FullscreenGestureController extends AbsGestureController {
+    private static final String TAG = "FullscreenGestureContro";
+
     private View mRoot;
     private View mLayoutTop;
     private View mBtnBack;
     private TextView mTvTitle;
 
     private ImageView mBtnPlay;
+    private SoProgressBar mProgressBrightness;
+    private SoProgressBar mProgressVolume;
 
     private View mLayoutBottom;
     private TextView mTvProgress;
@@ -32,6 +42,22 @@ public class FullscreenGestureController extends AbsGestureController {
         super(context);
         makeControllerView();
         setTitle(title);
+        setFocusable(true);
+
+        addGestureDetector(new FullscreenClickDetector(context, this));
+        addGestureDetector(new FullscreenVolumeDetector(context, this));
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        KLog.d(TAG, "keyCode = " + keyCode + ", event = " + event);
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mBackClickListener != null) {
+                mBackClickListener.onBackClick();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -63,6 +89,8 @@ public class FullscreenGestureController extends AbsGestureController {
         mTvTitle = root.findViewById(R.id.tv_title);
 
         mBtnPlay = root.findViewById(R.id.btn_play);
+        mProgressBrightness = root.findViewById(R.id.progress_brightness);
+        mProgressVolume = root.findViewById(R.id.progress_volume);
 
         mLayoutBottom = root.findViewById(R.id.layout_bottom);
         mTvProgress = root.findViewById(R.id.tv_progress);
@@ -72,6 +100,7 @@ public class FullscreenGestureController extends AbsGestureController {
         mBtnBack.setOnClickListener(mOnClickListener);
         mBtnPlay.setOnClickListener(mOnClickListener);
         mSbProgress.setOnSeekBarChangeListener(mSeekBarChangeListener);
+        this.setOnClickListener(mOnClickListener);
     }
 
     @Override
@@ -102,7 +131,6 @@ public class FullscreenGestureController extends AbsGestureController {
     }
 
     private void onClickBtnPlay() {
-
         doPauseResume();
     }
 
@@ -150,6 +178,32 @@ public class FullscreenGestureController extends AbsGestureController {
             post(mShowProgress);
         }
     };
+
+    public void showVolumeChange(@FloatRange(from = 0.0, to = 1.0) float percent) {
+        if (percent < 0) {
+            percent = 0;
+        } else if (percent > 1) {
+            percent = 1;
+        }
+
+        mProgressVolume.setVisibility(VISIBLE);
+        mProgressVolume.setProgress((int) (mProgressVolume.getMax() * percent));
+
+        if (percent <= 0) {
+            mProgressVolume.setIconImageRes(R.drawable.ic_volume_off);
+        } else if (percent <= 0.3) {
+            mProgressVolume.setIconImageRes(R.drawable.ic_volume_mute);
+        } else if (percent < 0.6) {
+            mProgressVolume.setIconImageRes(R.drawable.ic_volume_down);
+        } else {
+            mProgressVolume.setIconImageRes(R.drawable.ic_volume_up);
+        }
+    }
+
+    public void hideVolumeChange() {
+        mProgressVolume.setVisibility(GONE);
+    }
+
 
     public interface OnBackClickListener {
         public void onBackClick();

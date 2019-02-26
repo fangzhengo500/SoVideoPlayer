@@ -1,4 +1,4 @@
-package com.loosu.sovideoplayer.widget.videocontroller;
+package com.loosu.sovideoplayer.widget.controller;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -82,7 +82,7 @@ public abstract class MediaController extends FrameLayout {
         }
     }
 
-    protected void doPauseResume() {
+    public void doPauseResume() {
         final MediaPlayerControl player = mPlayer;
         if (player != null) {
             if (player.isPlaying()) {
