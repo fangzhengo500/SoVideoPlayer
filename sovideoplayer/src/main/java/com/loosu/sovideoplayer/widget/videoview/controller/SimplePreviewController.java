@@ -1,4 +1,4 @@
-package com.loosu.sovideoplayer.widget.controller;
+package com.loosu.sovideoplayer.widget.videoview.controller;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.loosu.sovideoplayer.R;
 import com.loosu.sovideoplayer.util.SystemUiUtil;
+import com.loosu.sovideoplayer.widget.videoview.FullScreenHelper;
 import com.loosu.sovideoplayer.widget.videoview.SoVideoView;
 
 public class SimplePreviewController extends MediaController {
@@ -123,26 +124,8 @@ public class SimplePreviewController extends MediaController {
         @Override
         public void onClick(View v) {
             final Activity activity = (Activity) getContext();
-            if (activity instanceof AppCompatActivity) {
-                ActionBar actionBar = activity.getActionBar();
-                if (actionBar != null) {
-                    actionBar.hide();
-                }
-                android.support.v7.app.ActionBar supportActionBar = ((AppCompatActivity) activity).getSupportActionBar();
-                if (supportActionBar != null) {
-                    supportActionBar.hide();
-                }
+            FullScreenHelper.getDefault().fullscreen(activity);
 
-            } else {
-                ActionBar actionBar = activity.getActionBar();
-                if (actionBar != null) {
-                    actionBar.hide();
-                }
-
-            }
-
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-            SystemUiUtil.toggleHideyBar(activity);
             final FullscreenGestureController controller = new FullscreenGestureController(activity, "Title");
             final SoVideoView videoView = new SoVideoView(activity, true);
 
@@ -162,7 +145,7 @@ public class SimplePreviewController extends MediaController {
                     controller.detachMediaPlayer();
                     ViewGroup contentView = activity.findViewById(android.R.id.content);
                     contentView.removeView(videoView);
-                    SystemUiUtil.toggleHideyBar(activity);
+                    FullScreenHelper.getDefault().fullscreenExit();
                 }
             });
         }

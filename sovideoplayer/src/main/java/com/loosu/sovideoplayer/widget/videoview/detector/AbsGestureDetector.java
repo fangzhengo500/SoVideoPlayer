@@ -1,11 +1,11 @@
-package com.loosu.sovideoplayer.widget.controller.detector;
+package com.loosu.sovideoplayer.widget.videoview.detector;
 
 import android.content.Context;
 import android.graphics.RectF;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-import com.loosu.sovideoplayer.widget.controller.AbsGestureController;
+import com.loosu.sovideoplayer.widget.videoview.controller.AbsGestureController;
 
 
 public abstract class AbsGestureDetector<T extends AbsGestureController> extends AbsGestureController.Detector<T> implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {

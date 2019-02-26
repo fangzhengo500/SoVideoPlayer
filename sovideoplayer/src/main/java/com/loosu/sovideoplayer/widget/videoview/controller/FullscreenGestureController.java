@@ -1,4 +1,4 @@
-package com.loosu.sovideoplayer.widget.controller;
+package com.loosu.sovideoplayer.widget.videoview.controller;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,9 +17,9 @@ import android.widget.TextView;
 import com.loosu.sovideoplayer.R;
 import com.loosu.sovideoplayer.util.KLog;
 import com.loosu.sovideoplayer.widget.SoProgressBar;
-import com.loosu.sovideoplayer.widget.controller.detector.FullscreenBrightnessDetector;
-import com.loosu.sovideoplayer.widget.controller.detector.FullscreenClickDetector;
-import com.loosu.sovideoplayer.widget.controller.detector.FullscreenVolumeDetector;
+import com.loosu.sovideoplayer.widget.videoview.detector.FullscreenBrightnessDetector;
+import com.loosu.sovideoplayer.widget.videoview.detector.FullscreenClickDetector;
+import com.loosu.sovideoplayer.widget.videoview.detector.FullscreenVolumeDetector;
 
 
 public class FullscreenGestureController extends AbsGestureController {

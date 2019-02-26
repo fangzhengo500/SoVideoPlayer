@@ -1,13 +1,12 @@
-package com.loosu.sovideoplayer.widget.controller.detector;
+package com.loosu.sovideoplayer.widget.videoview.detector;
 
 import android.app.Activity;
 import android.content.Context;
 import android.provider.Settings;
 import android.view.MotionEvent;
-import android.view.Window;
 import android.view.WindowManager;
 
-import com.loosu.sovideoplayer.widget.controller.FullscreenGestureController;
+import com.loosu.sovideoplayer.widget.videoview.controller.FullscreenGestureController;
 
 
 public class FullscreenBrightnessDetector extends AbsGestureDetector<FullscreenGestureController> {

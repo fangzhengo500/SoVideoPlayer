@@ -8,7 +8,7 @@ import com.loosu.sample.R;
 import com.loosu.sample.adapter.base.recyclerview.ARecyclerAdapter;
 import com.loosu.sample.adapter.base.recyclerview.RecyclerHolder;
 import com.loosu.sample.domain.VideoEntry;
-import com.loosu.sovideoplayer.widget.controller.SimplePreviewController;
+import com.loosu.sovideoplayer.widget.videoview.controller.SimplePreviewController;
 import com.loosu.sovideoplayer.widget.videoview.SoVideoView;
 
 import java.util.List;

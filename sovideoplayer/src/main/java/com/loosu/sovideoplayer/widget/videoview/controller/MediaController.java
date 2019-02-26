@@ -1,4 +1,4 @@
-package com.loosu.sovideoplayer.widget.controller;
+package com.loosu.sovideoplayer.widget.videoview.controller;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
