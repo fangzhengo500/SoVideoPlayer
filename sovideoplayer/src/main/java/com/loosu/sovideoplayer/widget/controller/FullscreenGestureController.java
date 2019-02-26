@@ -1,11 +1,15 @@
 package com.loosu.sovideoplayer.widget.controller;
 
+import android.app.Activity;
 import android.content.Context;
+import android.media.AudioManager;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -13,6 +17,7 @@ import android.widget.TextView;
 import com.loosu.sovideoplayer.R;
 import com.loosu.sovideoplayer.util.KLog;
 import com.loosu.sovideoplayer.widget.SoProgressBar;
+import com.loosu.sovideoplayer.widget.controller.detector.FullscreenBrightnessDetector;
 import com.loosu.sovideoplayer.widget.controller.detector.FullscreenClickDetector;
 import com.loosu.sovideoplayer.widget.controller.detector.FullscreenVolumeDetector;
 
@@ -44,8 +49,9 @@ public class FullscreenGestureController extends AbsGestureController {
         setTitle(title);
         setFocusable(true);
 
-        addGestureDetector(new FullscreenClickDetector(context, this));
+        addGestureDetector(new FullscreenBrightnessDetector(context, this));
         addGestureDetector(new FullscreenVolumeDetector(context, this));
+        addGestureDetector(new FullscreenClickDetector(context, this));
     }
 
     @Override
@@ -179,29 +185,68 @@ public class FullscreenGestureController extends AbsGestureController {
         }
     };
 
-    public void showVolumeChange(@FloatRange(from = 0.0, to = 1.0) float percent) {
+    public void setVolume(@FloatRange(from = 0.0, to = 1.0) float percent, boolean showProgress) {
         if (percent < 0) {
             percent = 0;
         } else if (percent > 1) {
             percent = 1;
         }
 
-        mProgressVolume.setVisibility(VISIBLE);
-        mProgressVolume.setProgress((int) (mProgressVolume.getMax() * percent));
+        AudioManager am = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+        int maxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int newVolume = (int) (percent * maxVolume);
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0);
 
-        if (percent <= 0) {
-            mProgressVolume.setIconImageRes(R.drawable.ic_volume_off);
-        } else if (percent <= 0.3) {
-            mProgressVolume.setIconImageRes(R.drawable.ic_volume_mute);
-        } else if (percent < 0.6) {
-            mProgressVolume.setIconImageRes(R.drawable.ic_volume_down);
-        } else {
-            mProgressVolume.setIconImageRes(R.drawable.ic_volume_up);
+        if (showProgress) {
+            if (mProgressVolume.getVisibility() != VISIBLE) {
+                mProgressVolume.setVisibility(VISIBLE);
+            }
+
+            mProgressVolume.setProgress((int) (mProgressVolume.getMax() * percent));
+            if (percent <= 0) {
+                mProgressVolume.setIconImageRes(R.drawable.ic_volume_off);
+            } else if (percent <= 0.3) {
+                mProgressVolume.setIconImageRes(R.drawable.ic_volume_mute);
+            } else if (percent < 0.6) {
+                mProgressVolume.setIconImageRes(R.drawable.ic_volume_down);
+            } else {
+                mProgressVolume.setIconImageRes(R.drawable.ic_volume_up);
+            }
         }
     }
 
-    public void hideVolumeChange() {
+    public void hideVolume() {
         mProgressVolume.setVisibility(GONE);
+    }
+
+    public void setBright(@FloatRange(from = 0.0, to = 1.0) float percent, boolean show) {
+        if (percent < 0) {
+            percent = 0;
+        } else if (percent > 1) {
+            percent = 1;
+        }
+
+        Window window = ((Activity) getContext()).getWindow();
+        WindowManager.LayoutParams params = window.getAttributes();
+
+        params.screenBrightness = percent;
+        if (params.screenBrightness > 1) {
+            params.screenBrightness = 1;
+        } else if (params.screenBrightness < 0) {
+            params.screenBrightness = 0;
+        }
+        window.setAttributes(params);
+
+        if (show) {
+            if (mProgressBrightness.getVisibility() != VISIBLE) {
+                mProgressBrightness.setVisibility(VISIBLE);
+            }
+            mProgressBrightness.setProgress((int) (mProgressBrightness.getMax() * percent));
+        }
+    }
+
+    public void hideBrightChange() {
+        mProgressBrightness.setVisibility(GONE);
     }
 
 

@@ -1,24 +1,26 @@
 package com.loosu.sovideoplayer.widget.controller.detector;
 
+import android.app.Activity;
 import android.content.Context;
-import android.media.AudioManager;
+import android.provider.Settings;
 import android.view.MotionEvent;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.loosu.sovideoplayer.widget.controller.FullscreenGestureController;
 
 
-public class FullscreenVolumeDetector extends AbsGestureDetector<FullscreenGestureController> {
+public class FullscreenBrightnessDetector extends AbsGestureDetector<FullscreenGestureController> {
 
-    private int mVolume;    // 记录按下时--系统声量
-    private int mMaxVolume; // 记录按下时--系统最大声量
+    private float mScreenBrightness;
 
-    public FullscreenVolumeDetector(Context context, FullscreenGestureController controller) {
+    public FullscreenBrightnessDetector(Context context, FullscreenGestureController controller) {
         super(context, controller);
     }
 
     @Override
     public void onControllerSizeChanged(int w, int h, int oldw, int oldh) {
-        mTriggerRect.set(w / 2, 0, w, h);
+        mTriggerRect.set(0, 0, w / 2, h);
         mControlRect.set(0, 0, w, h);
     }
 
@@ -29,7 +31,7 @@ public class FullscreenVolumeDetector extends AbsGestureDetector<FullscreenGestu
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 mHandling = false;
-                mController.hideVolume();
+                mController.hideBrightChange();
                 break;
         }
         return super.onTouchEvent(event);
@@ -38,11 +40,11 @@ public class FullscreenVolumeDetector extends AbsGestureDetector<FullscreenGestu
     @Override
     public boolean onDown(MotionEvent e) {
         super.onDown(e);
-        AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        int streamType = AudioManager.STREAM_MUSIC;
-        mVolume = am.getStreamVolume(streamType);
-        mMaxVolume = am.getStreamMaxVolume(streamType);
-
+        WindowManager.LayoutParams windowParams = ((Activity) mContext).getWindow().getAttributes();
+        mScreenBrightness = windowParams.screenBrightness;
+        if (mScreenBrightness == -1) {
+            mScreenBrightness = getSysScreenBrightnessInFloat(mScreenBrightness);
+        }
         return true;
     }
 
@@ -62,17 +64,32 @@ public class FullscreenVolumeDetector extends AbsGestureDetector<FullscreenGestu
                 mHandling = true;
             }
         } else {
+
             int viewHeight = mController.getHeight();
-            int dVol = 0;
+            float changeBright;
             if (viewHeight > 0) {
-                dVol = (int) (-moveY * mMaxVolume * 3 / viewHeight);
+                changeBright = -moveY * 3f / viewHeight;
             } else {
-                dVol = (int) (-moveY * 0.02);
+                changeBright = (float) (-moveY * 0.002);
             }
-            int newVol = mVolume + dVol;
-            mController.setVolume(newVol * 1f / mMaxVolume, true);
+            mController.setBright(mScreenBrightness + changeBright, true);
         }
 
         return true;
+    }
+
+    /**
+     * @param defaultBrightness
+     * @return [0 ~ 1]
+     */
+    private float getSysScreenBrightnessInFloat(float defaultBrightness) {
+        float result = defaultBrightness;
+        try {
+            int sysBrightness = Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+            result = sysBrightness * 1f / 255;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }
