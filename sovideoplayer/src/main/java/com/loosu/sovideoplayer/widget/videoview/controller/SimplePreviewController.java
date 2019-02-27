@@ -124,16 +124,12 @@ public class SimplePreviewController extends MediaController {
         @Override
         public void onClick(View v) {
             final Activity activity = (Activity) getContext();
-            FullScreenHelper.getDefault().fullscreen(activity);
+
+            final SoVideoView videoView = new SoVideoView(activity, true);
+            FullScreenHelper.getDefault().fullscreen(activity, videoView);
 
             final FullscreenGestureController controller = new FullscreenGestureController(activity, "Title");
-            final SoVideoView videoView = new SoVideoView(activity, true);
-
             videoView.setMediaController(controller);
-            ViewGroup contentView = activity.findViewById(android.R.id.content);
-            contentView.addView(videoView,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT);
 
             controller.setFocusable(true);
             controller.setFocusableInTouchMode(true);
@@ -141,13 +137,10 @@ public class SimplePreviewController extends MediaController {
             controller.setBackClickListener(new FullscreenGestureController.OnBackClickListener() {
                 @Override
                 public void onBackClick() {
-                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    controller.detachMediaPlayer();
-                    ViewGroup contentView = activity.findViewById(android.R.id.content);
-                    contentView.removeView(videoView);
-                    FullScreenHelper.getDefault().fullscreenExit();
+                     FullScreenHelper.getDefault().fullscreenExit();
                 }
             });
+
         }
     };
 

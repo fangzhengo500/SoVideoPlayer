@@ -68,6 +68,24 @@ public class SystemUiUtil {
         int newUiOptions = uiOptions;
 
         if (Build.VERSION.SDK_INT >= 14) {
+            newUiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        }
+
+        if (Build.VERSION.SDK_INT >= 16) {
+            newUiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+        }
+        if (Build.VERSION.SDK_INT >= 18) {
+            newUiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        }
+
+        activity.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
+    }
+
+    public static void showSystemUi(Activity activity) {
+        int uiOptions = activity.getWindow().getDecorView().getSystemUiVisibility();
+        int newUiOptions = uiOptions;
+
+        if (Build.VERSION.SDK_INT >= 14) {
             newUiOptions &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         }
 
