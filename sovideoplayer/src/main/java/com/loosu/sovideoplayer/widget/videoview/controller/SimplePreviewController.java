@@ -1,22 +1,15 @@
 package com.loosu.sovideoplayer.widget.videoview.controller;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.loosu.sovideoplayer.R;
-import com.loosu.sovideoplayer.util.SystemUiUtil;
-import com.loosu.sovideoplayer.widget.videoview.FullScreenHelper;
-import com.loosu.sovideoplayer.widget.videoview.SoVideoView;
 
 public class SimplePreviewController extends MediaController {
     private static final String TAG = "SimplePreviewController";
@@ -29,6 +22,8 @@ public class SimplePreviewController extends MediaController {
     private TextView mTvDuration;
     private SeekBar mSbProgress;
     private View mBtnFullscreen;
+
+    private Listener mListener;
 
     public SimplePreviewController(@NonNull Context context) {
         super(context);
@@ -112,6 +107,14 @@ public class SimplePreviewController extends MediaController {
         return (int) position;
     }
 
+    public Listener getListener() {
+        return mListener;
+    }
+
+    public void setListener(Listener listener) {
+        mListener = listener;
+    }
+
     private final View.OnClickListener mBtnPlayClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -123,21 +126,9 @@ public class SimplePreviewController extends MediaController {
     private final View.OnClickListener mBtnFullscreenClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            final Activity activity = (Activity) getContext();
-
-            final SoVideoView fullscreenVideo = new SoVideoView(activity, true);
-            final FullscreenGestureController controller = new FullscreenGestureController(activity, "Title");
-            fullscreenVideo.setMediaController(controller);
-
-
-            controller.setBackClickListener(new FullscreenGestureController.OnBackClickListener() {
-                @Override
-                public void onBackClick() {
-                    FullScreenHelper.getDefault().fullscreenExit();
-                }
-            });
-
-            FullScreenHelper.getDefault().fullscreen(activity, getPlayer(), fullscreenVideo);
+            if (mListener != null) {
+                mListener.onFullscreenClick(SimplePreviewController.this);
+            }
         }
     };
 
@@ -184,4 +175,8 @@ public class SimplePreviewController extends MediaController {
             post(mShowProgress);
         }
     };
+
+    public interface Listener{
+        public void onFullscreenClick(MediaController controller);
+    }
 }

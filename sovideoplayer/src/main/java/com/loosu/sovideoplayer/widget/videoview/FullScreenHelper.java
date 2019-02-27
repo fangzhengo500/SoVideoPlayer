@@ -24,7 +24,8 @@ public class FullScreenHelper {
 
     private int mSystemUi;
 
-    private View mFullscreenView;
+    private SoVideoView mFullscreenView;
+    private SoVideoView mSrcVideo;
 
     public static FullScreenHelper getDefault() {
         if (mInstance == null) {
@@ -37,11 +38,12 @@ public class FullScreenHelper {
         return mInstance;
     }
 
-    public void fullscreen(Activity activity, MediaController.MediaPlayerControl player,  SoVideoView fullscreenVideo) {
+    public void fullscreen(Activity activity, SoVideoView srcVideo,  SoVideoView fullscreenVideo) {
         if (mActivity != null) {
             throw new IllegalStateException("is fullscreen now！！！");
         }
         mActivity = activity;
+        mSrcVideo = srcVideo;
         mFullscreenView = fullscreenVideo;
         saveActivityState(activity);
         SystemUiUtil.hideSystemUi(activity);
@@ -51,7 +53,7 @@ public class FullScreenHelper {
         fullscreenVideo.requestFocus();
         findActivityContent(activity).addView(fullscreenVideo);
 
-        player.pause();
+        srcVideo.pause();
         fullscreenVideo.start();
     }
 
@@ -60,6 +62,8 @@ public class FullScreenHelper {
         mActivity = null;
         restoreActivityState(activity);
         findActivityContent(activity).removeView(mFullscreenView);
+        mFullscreenView.pause();
+        mSrcVideo.start();
     }
 
     /**

@@ -22,10 +22,16 @@ import java.util.Locale;
 public class SoVideoView extends FrameLayout implements MediaController.MediaPlayerControl {
     private static final String TAG = "SoVideoView";
 
+    private static final int SURFACE_UNKOWN = 0;
+    private static final int SURFACE_CREATED = 1;
+    private static final int SURFACE_DESTROYED = 2;
+
     private AutoFixSurfaceView mSurfaceView;
 
     private MediaController mMediaController;
 
+    private int mSurfaceStatus = SURFACE_UNKOWN;
+    private boolean mSetDiaplayAfterSurfaceCreated = false;
     private boolean isPrepared = false;
     private String mDataSource;
     private int mPercent;
@@ -109,7 +115,12 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
             pm.prepare();
             pm.setListener(mPlayerLisenter);
         }
-        pm.setDisPlay(mSurfaceView.getHolder());
+
+        if (mSurfaceStatus == SURFACE_CREATED) {
+            pm.setDisPlay(mSurfaceView.getHolder());
+        } else {
+            mSetDiaplayAfterSurfaceCreated = true;
+        }
     }
 
     @Override
@@ -209,9 +220,11 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
             KLog.i(TAG, "holder = " + holder);
-//            KLog.d(TAG, "surface 设置显示");
-//            SoPlayerManager pm = SoPlayerManager.getInstance();
-//            pm.setDisPlay(holder);
+            mSurfaceStatus = SURFACE_CREATED;
+            if (mSetDiaplayAfterSurfaceCreated) {
+                SoPlayerManager.getInstance().setDisPlay(holder);
+                mSetDiaplayAfterSurfaceCreated = false;
+            }
         }
 
         @Override
@@ -223,6 +236,8 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
             KLog.w(TAG, "holder = " + holder);
+            mSurfaceStatus = SURFACE_DESTROYED;
+            mSetDiaplayAfterSurfaceCreated = false;
         }
     };
 

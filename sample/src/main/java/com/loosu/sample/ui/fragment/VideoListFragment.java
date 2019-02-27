@@ -57,7 +57,7 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private void init(Bundle savedInstanceState) {
-        mAdapter = new VideoViewAdapter(null);
+        mAdapter = new VideoViewAdapter(getActivity());
         refreshData();
     }
 

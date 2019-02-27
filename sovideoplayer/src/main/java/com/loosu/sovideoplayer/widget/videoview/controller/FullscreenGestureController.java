@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import com.loosu.sovideoplayer.util.KLog;
 import com.loosu.sovideoplayer.widget.SoProgressBar;
 import com.loosu.sovideoplayer.widget.videoview.detector.FullscreenBrightnessDetector;
 import com.loosu.sovideoplayer.widget.videoview.detector.FullscreenClickDetector;
+import com.loosu.sovideoplayer.widget.videoview.detector.FullscreenSeekDetector;
 import com.loosu.sovideoplayer.widget.videoview.detector.FullscreenVolumeDetector;
 
 
@@ -31,14 +33,17 @@ public class FullscreenGestureController extends AbsGestureController {
     private TextView mTvTitle;
 
     private ImageView mBtnPlay;
-    private SoProgressBar mProgressBrightness;
-    private SoProgressBar mProgressVolume;
-
     private View mLayoutBottom;
     private TextView mTvProgress;
     private TextView mTvDuration;
     private SeekBar mSbProgress;
     private View mBtnFullscreenExit;
+    private SoProgressBar mProgressBrightness;
+    private SoProgressBar mProgressVolume;
+    private View mLayoutSeek;
+    private TextView mTvSeekPosition;
+    private TextView mTvSeekDuration;
+    private ProgressBar mProgressBarSeek;
 
     private String mTileStr;
 
@@ -50,6 +55,7 @@ public class FullscreenGestureController extends AbsGestureController {
         setTitle(title);
         setFocusable(true);
 
+        addGestureDetector(new FullscreenSeekDetector(context, this));
         addGestureDetector(new FullscreenBrightnessDetector(context, this));
         addGestureDetector(new FullscreenVolumeDetector(context, this));
         addGestureDetector(new FullscreenClickDetector(context, this));
@@ -96,14 +102,20 @@ public class FullscreenGestureController extends AbsGestureController {
         mTvTitle = root.findViewById(R.id.tv_title);
 
         mBtnPlay = root.findViewById(R.id.btn_play);
-        mProgressBrightness = root.findViewById(R.id.progress_brightness);
-        mProgressVolume = root.findViewById(R.id.progress_volume);
 
         mLayoutBottom = root.findViewById(R.id.layout_bottom);
         mTvProgress = root.findViewById(R.id.tv_progress);
         mTvDuration = root.findViewById(R.id.tv_duration);
         mSbProgress = root.findViewById(R.id.sb_progress);
         mBtnFullscreenExit = root.findViewById(R.id.btn_fullscreen_exit);
+
+        mProgressBrightness = root.findViewById(R.id.progress_brightness);
+        mProgressVolume = root.findViewById(R.id.progress_volume);
+
+        mLayoutSeek = root.findViewById(R.id.layout_seek);
+        mTvSeekPosition = root.findViewById(R.id.tv_seek_position);
+        mTvSeekDuration = root.findViewById(R.id.tv_seek_duration);
+        mProgressBarSeek = root.findViewById(R.id.progress_bar_seek);
 
         mBtnBack.setOnClickListener(mOnClickListener);
         mBtnPlay.setOnClickListener(mOnClickListener);
@@ -281,6 +293,39 @@ public class FullscreenGestureController extends AbsGestureController {
 
     public void hideBrightChange() {
         mProgressBrightness.setVisibility(GONE);
+    }
+
+
+    public void seekTo(long seekTo, boolean show) {
+        final MediaPlayerControl player = getPlayer();
+        if (player == null) {
+            return;
+        }
+
+        player.seekTo(seekTo);
+
+        if (show) {
+            long currentPosition = player.getCurrentPosition();
+            long duration = player.getDuration();
+            mLayoutSeek.setVisibility(VISIBLE);
+            mTvSeekPosition.setText(stringForTime(currentPosition));
+            mTvSeekDuration.setText(stringForTime(duration));
+            mProgressBarSeek.setProgress((int) (currentPosition * 1f / duration * mProgressBarSeek.getMax()));
+        }
+    }
+
+    public void hideSeek() {
+        mLayoutSeek.setVisibility(GONE);
+    }
+
+    public long getCurrentPosition() {
+        MediaPlayerControl player = getPlayer();
+        return player == null ? 0 : player.getCurrentPosition();
+    }
+
+    public long getDuration() {
+        MediaPlayerControl player = getPlayer();
+        return player == null ? 0 : player.getDuration();
     }
 
 

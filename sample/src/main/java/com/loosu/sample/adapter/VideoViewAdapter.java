@@ -1,5 +1,6 @@
 package com.loosu.sample.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
@@ -8,14 +9,21 @@ import com.loosu.sample.R;
 import com.loosu.sample.adapter.base.recyclerview.ARecyclerAdapter;
 import com.loosu.sample.adapter.base.recyclerview.RecyclerHolder;
 import com.loosu.sample.domain.VideoEntry;
+import com.loosu.sovideoplayer.widget.videoview.FullScreenHelper;
+import com.loosu.sovideoplayer.widget.videoview.controller.FullscreenGestureController;
+import com.loosu.sovideoplayer.widget.videoview.controller.MediaController;
 import com.loosu.sovideoplayer.widget.videoview.controller.SimplePreviewController;
 import com.loosu.sovideoplayer.widget.videoview.SoVideoView;
 
 import java.util.List;
 
-public class VideoViewAdapter extends ARecyclerAdapter<VideoEntry> {
-    public VideoViewAdapter(@Nullable List<VideoEntry> datas) {
-        super(datas);
+public class VideoViewAdapter extends ARecyclerAdapter<VideoEntry> implements SimplePreviewController.Listener {
+
+    private final Activity mActivity;
+
+    public VideoViewAdapter(Activity activity) {
+        super(null);
+        mActivity = activity;
     }
 
     @Override
@@ -27,7 +35,9 @@ public class VideoViewAdapter extends ARecyclerAdapter<VideoEntry> {
     public RecyclerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerHolder holder = super.onCreateViewHolder(parent, viewType);
         SoVideoView videoView = holder.getView(R.id.video_view);
-        videoView.setMediaController(new SimplePreviewController(parent.getContext()));
+        SimplePreviewController controller = new SimplePreviewController(parent.getContext());
+        controller.setListener(this);
+        videoView.setMediaController(controller);
         return holder;
     }
 
@@ -50,5 +60,22 @@ public class VideoViewAdapter extends ARecyclerAdapter<VideoEntry> {
     public void setDatas(List<VideoEntry> datas) {
         super.setDatas(datas);
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void onFullscreenClick(MediaController controller) {
+        final Context context = mActivity;
+
+        FullscreenGestureController fullscreenController = new FullscreenGestureController(context, "sadfasdf");
+        fullscreenController.setBackClickListener(new FullscreenGestureController.OnBackClickListener() {
+            @Override
+            public void onBackClick() {
+                FullScreenHelper.getDefault().fullscreenExit();
+            }
+        });
+        SoVideoView fullscreenVideo = new SoVideoView(context,true);
+        fullscreenVideo.setMediaController(fullscreenController);
+
+        FullScreenHelper.getDefault().fullscreen(mActivity, (SoVideoView) controller.getPlayer(), fullscreenVideo);
     }
 }
