@@ -8,8 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.loosu.sovideoplayer.util.KLog;
 import com.loosu.sovideoplayer.util.SystemUiUtil;
+import com.loosu.sovideoplayer.widget.videoview.controller.MediaController;
 
 public class FullScreenHelper {
     private static final String TAG = "FullScreenHelper";
@@ -37,13 +37,35 @@ public class FullScreenHelper {
         return mInstance;
     }
 
-    public void fullscreen(Activity activity, View fullscreenView) {
+    public void fullscreen(Activity activity, MediaController.MediaPlayerControl player,  SoVideoView fullscreenVideo) {
         if (mActivity != null) {
             throw new IllegalStateException("is fullscreen now！！！");
         }
-
         mActivity = activity;
-        mFullscreenView = fullscreenView;
+        mFullscreenView = fullscreenVideo;
+        saveActivityState(activity);
+        SystemUiUtil.hideSystemUi(activity);
+
+        fullscreenVideo.setFocusable(true);
+        fullscreenVideo.setFocusableInTouchMode(true);
+        fullscreenVideo.requestFocus();
+        findActivityContent(activity).addView(fullscreenVideo);
+
+        player.pause();
+        fullscreenVideo.start();
+    }
+
+    public void fullscreenExit() {
+        final Activity activity = mActivity;
+        mActivity = null;
+        restoreActivityState(activity);
+        findActivityContent(activity).removeView(mFullscreenView);
+    }
+
+    /**
+     * 保存Activity状态
+     */
+    private void saveActivityState(Activity activity) {
         // 保存 toolbar 状态
         if (activity instanceof AppCompatActivity) {
             ActionBar actionBar = activity.getActionBar();
@@ -72,15 +94,12 @@ public class FullScreenHelper {
 
         // 保存 SystemUi 状态
         mSystemUi = activity.getWindow().getDecorView().getSystemUiVisibility();
-        SystemUiUtil.hideSystemUi(activity);
-
-        findActivityContent(activity).addView(fullscreenView);
     }
 
-    public void fullscreenExit() {
-        final Activity activity = mActivity;
-        mActivity = null;
-
+    /**
+     * 恢复Activity状态
+     */
+    private void restoreActivityState(Activity activity) {
         // 恢复 toolbar
         if (activity instanceof AppCompatActivity) {
             ActionBar actionBar = activity.getActionBar();
@@ -113,23 +132,21 @@ public class FullScreenHelper {
         }
 
         // 恢复 screen orientation
-        if (mRequestOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED){
+        if (mRequestOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
             // 先根据之前的Activity方向指定具体方向
-            if (mOrientation == Configuration.ORIENTATION_LANDSCAPE){
+            if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }else {
+            } else {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
             // 再设置会原本的标志
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-        }else {
+        } else {
             activity.setRequestedOrientation(mRequestOrientation);
         }
 
         // 恢复 SystemUi 状态
         activity.getWindow().getDecorView().setSystemUiVisibility(mSystemUi);
-
-        findActivityContent(activity).removeView(mFullscreenView);
     }
 
     private ViewGroup findActivityContent(Activity activity) {

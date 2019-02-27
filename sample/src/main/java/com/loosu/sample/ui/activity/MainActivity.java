@@ -11,13 +11,5 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //findViewById(R.id.btn).setOnClickListener(this);
     }
-
-//    public void onClick(View view) {
-//        Intent service = new Intent();
-//        startService(service);
-//    }
-
-
 }

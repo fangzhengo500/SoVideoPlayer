@@ -125,22 +125,19 @@ public class SimplePreviewController extends MediaController {
         public void onClick(View v) {
             final Activity activity = (Activity) getContext();
 
-            final SoVideoView videoView = new SoVideoView(activity, true);
-            FullScreenHelper.getDefault().fullscreen(activity, videoView);
-
+            final SoVideoView fullscreenVideo = new SoVideoView(activity, true);
             final FullscreenGestureController controller = new FullscreenGestureController(activity, "Title");
-            videoView.setMediaController(controller);
+            fullscreenVideo.setMediaController(controller);
 
-            controller.setFocusable(true);
-            controller.setFocusableInTouchMode(true);
-            controller.requestFocus();
+
             controller.setBackClickListener(new FullscreenGestureController.OnBackClickListener() {
                 @Override
                 public void onBackClick() {
-                     FullScreenHelper.getDefault().fullscreenExit();
+                    FullScreenHelper.getDefault().fullscreenExit();
                 }
             });
 
+            FullScreenHelper.getDefault().fullscreen(activity, getPlayer(), fullscreenVideo);
         }
     };
 
