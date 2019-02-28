@@ -114,14 +114,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="100dp"
+        android:orientation="vertical"
         android:visibility="gone"
-        tools:visibility="visible"
-        android:orientation="vertical">
+        tools:visibility="visible">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <TextView
@@ -130,14 +130,14 @@
                 android:layout_height="wrap_content"
                 android:text="00:00:00"
                 android:textColor="@color/colorAccent"
-                android:textSize="@dimen/text_size_normal" />
+                android:textSize="@dimen/text_size_big" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="/"
+                android:text=" / "
                 android:textColor="@color/text_color_white"
-                android:textSize="@dimen/text_size_normal" />
+                android:textSize="@dimen/text_size_big" />
 
             <TextView
                 android:id="@+id/tv_seek_duration"
@@ -145,7 +145,7 @@
                 android:layout_height="wrap_content"
                 android:text="00:00:00"
                 android:textColor="@color/text_color_white"
-                android:textSize="@dimen/text_size_normal" />
+                android:textSize="@dimen/text_size_big" />
         </LinearLayout>
 
         <ProgressBar

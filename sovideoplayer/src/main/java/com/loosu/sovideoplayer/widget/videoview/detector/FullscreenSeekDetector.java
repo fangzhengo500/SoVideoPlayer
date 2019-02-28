@@ -27,7 +27,7 @@ public class FullscreenSeekDetector extends AbsGestureDetector<FullscreenGesture
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 if (mHandling && mTargetSeek != -1) {
-                    mController.seekTo((int) mTargetSeek, true);
+                    mController.seekTo(mTargetSeek);
                 }
                 mHandling = false;
                 mController.hideSeek();
@@ -69,7 +69,7 @@ public class FullscreenSeekDetector extends AbsGestureDetector<FullscreenGesture
             }
             long seekTo = mSeek + dSeek;
             mTargetSeek = seekTo = Math.max(0, Math.min(duration, seekTo));
-            mController.seekTo(seekTo, true);
+            mController.showSeek(seekTo);
         }
 
         return true;

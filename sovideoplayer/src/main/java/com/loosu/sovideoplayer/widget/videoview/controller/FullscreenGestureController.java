@@ -296,7 +296,7 @@ public class FullscreenGestureController extends AbsGestureController {
     }
 
 
-    public void seekTo(long seekTo, boolean show) {
+    public void seekTo(long seekTo) {
         final MediaPlayerControl player = getPlayer();
         if (player == null) {
             return;
@@ -304,14 +304,19 @@ public class FullscreenGestureController extends AbsGestureController {
 
         player.seekTo(seekTo);
 
-        if (show) {
-            long currentPosition = player.getCurrentPosition();
-            long duration = player.getDuration();
-            mLayoutSeek.setVisibility(VISIBLE);
-            mTvSeekPosition.setText(stringForTime(currentPosition));
-            mTvSeekDuration.setText(stringForTime(duration));
-            mProgressBarSeek.setProgress((int) (currentPosition * 1f / duration * mProgressBarSeek.getMax()));
+
+    }
+
+    public void showSeek(long seek) {
+        final MediaPlayerControl player = getPlayer();
+        if (player == null) {
+            return;
         }
+        long duration = player.getDuration();
+        mLayoutSeek.setVisibility(VISIBLE);
+        mTvSeekPosition.setText(stringForTime(seek));
+        mTvSeekDuration.setText(stringForTime(duration));
+        mProgressBarSeek.setProgress((int) (seek * 1f / duration * mProgressBarSeek.getMax()));
     }
 
     public void hideSeek() {
