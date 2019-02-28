@@ -113,10 +113,12 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
         List<VideoEntry> videos = DataHelper.getVideos(context);
 
         // 加一个假数据
-        VideoEntry videoEntry = new VideoEntry();
-        videoEntry.setData("http://jzvd.nathen.cn/c6e3dc12a1154626b3476d9bf3bd7266/6b56c5f0dc31428083757a45764763b0-5287d2089db37e62345123a1be272f8b.mp4");
-        videos.add(0, videoEntry);
-
+        VideoEntry videoEntry1 = new VideoEntry();
+        videoEntry1.setData("http://jzvd.nathen.cn/c6e3dc12a1154626b3476d9bf3bd7266/6b56c5f0dc31428083757a45764763b0-5287d2089db37e62345123a1be272f8b.mp4");
+        VideoEntry videoEntry2 = new VideoEntry();
+        videoEntry2.setData("http://ivytest.i-weiying.com/74ba/video/20181222/20181222cceea418d72ed7ba9af883349500cba91545449583751.mp4?auth_key=1551327186-0-0-8e89d5683e02500bbb96c8b0b2ffe0f2");
+        videos.add(0, videoEntry2);
+        videos.add(0, videoEntry1);
         mAdapter.setDatas(videos);
     }
 

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.loosu.sovideoplayer.R;
@@ -22,16 +23,17 @@ import java.util.Locale;
 public class SoVideoView extends FrameLayout implements MediaController.MediaPlayerControl {
     private static final String TAG = "SoVideoView";
 
-    private static final int SURFACE_UNKOWN = 0;
-    private static final int SURFACE_CREATED = 1;
-    private static final int SURFACE_DESTROYED = 2;
+    private static final int SURFACE_STATUS_UNKNOWN = 0;
+    private static final int SURFACE_STATUS_CREATED = 1;
+    private static final int SURFACE_STATUS_DESTROYED = 2;
 
     private AutoFixSurfaceView mSurfaceView;
+    private View mLoadingView;
 
     private MediaController mMediaController;
 
-    private int mSurfaceStatus = SURFACE_UNKOWN;
-    private boolean mSetDiaplayAfterSurfaceCreated = false;
+    private int mSurfaceStatus = SURFACE_STATUS_UNKNOWN;
+    private boolean mSetDisplayAfterSurfaceCreated = false;
     private boolean isPrepared = false;
     private String mDataSource;
     private int mPercent;
@@ -53,6 +55,8 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.view_so_video, this, true);
         mSurfaceView = findViewById(R.id.surface_view);
+        mLoadingView = findViewById(R.id.loading_view);
+
         mSurfaceView.getHolder().addCallback(mSurfaceCallback);
 
         SoPlayerManager playerManager = SoPlayerManager.getInstance();
@@ -113,13 +117,13 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
             pm.reset();
             pm.setDataSource(mDataSource);
             pm.prepare();
-            pm.setListener(mPlayerLisenter);
+            pm.setListener(mPlayerListener);
         }
 
-        if (mSurfaceStatus == SURFACE_CREATED) {
+        if (mSurfaceStatus == SURFACE_STATUS_CREATED) {
             pm.setDisPlay(mSurfaceView.getHolder());
         } else {
-            mSetDiaplayAfterSurfaceCreated = true;
+            mSetDisplayAfterSurfaceCreated = true;
         }
     }
 
@@ -173,7 +177,7 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
         return 0;
     }
 
-    private IPlayerManager.Listener mPlayerLisenter = new IPlayerManager.Listener() {
+    private IPlayerManager.Listener mPlayerListener = new IPlayerManager.Listener() {
         @Override
         public void onBufferingUpdate(int percent) {
             mPercent = percent;
@@ -192,6 +196,14 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
 
         @Override
         public boolean onInfo(int what, int extra) {
+            switch (what) {
+                case 701:
+                    mLoadingView.setVisibility(VISIBLE);
+                    break;
+                case 702:
+                    mLoadingView.setVisibility(GONE);
+                    break;
+            }
             return true;
         }
 
@@ -220,10 +232,10 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
             KLog.i(TAG, "holder = " + holder);
-            mSurfaceStatus = SURFACE_CREATED;
-            if (mSetDiaplayAfterSurfaceCreated) {
+            mSurfaceStatus = SURFACE_STATUS_CREATED;
+            if (mSetDisplayAfterSurfaceCreated) {
                 SoPlayerManager.getInstance().setDisPlay(holder);
-                mSetDiaplayAfterSurfaceCreated = false;
+                mSetDisplayAfterSurfaceCreated = false;
             }
         }
 
@@ -236,9 +248,8 @@ public class SoVideoView extends FrameLayout implements MediaController.MediaPla
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
             KLog.w(TAG, "holder = " + holder);
-            mSurfaceStatus = SURFACE_DESTROYED;
-            mSetDiaplayAfterSurfaceCreated = false;
+            mSurfaceStatus = SURFACE_STATUS_DESTROYED;
+            mSetDisplayAfterSurfaceCreated = false;
         }
     };
-
 }
