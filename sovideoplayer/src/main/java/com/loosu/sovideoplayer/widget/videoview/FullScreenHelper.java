@@ -5,11 +5,9 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.loosu.sovideoplayer.util.SystemUiUtil;
-import com.loosu.sovideoplayer.widget.videoview.controller.MediaController;
 
 public class FullScreenHelper {
     private static final String TAG = "FullScreenHelper";
@@ -38,7 +36,7 @@ public class FullScreenHelper {
         return mInstance;
     }
 
-    public void fullscreen(Activity activity, SoVideoView srcVideo,  SoVideoView fullscreenVideo) {
+    public void fullscreen(Activity activity, SoVideoView srcVideo, final SoVideoView fullscreenVideo) {
         if (mActivity != null) {
             throw new IllegalStateException("is fullscreen now！！！");
         }
@@ -54,7 +52,12 @@ public class FullScreenHelper {
         findActivityContent(activity).addView(fullscreenVideo);
 
         srcVideo.pause();
-        fullscreenVideo.start();
+        fullscreenVideo.post(new Runnable() {
+            @Override
+            public void run() {
+                fullscreenVideo.start();
+            }
+        });
     }
 
     public void fullscreenExit() {
