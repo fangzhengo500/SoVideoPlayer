@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.loosu.sample.R;
+import com.loosu.sample.adapter.AbsVideoAdapter;
 import com.loosu.sample.adapter.SimpleVideoAdapter;
 import com.loosu.sample.adapter.VideoViewAdapter;
 import com.loosu.sample.adapter.base.recyclerview.ARecyclerAdapter;
@@ -25,16 +25,24 @@ import com.loosu.sample.domain.VideoEntry;
 import com.loosu.sample.ui.activity.SimplePlayerActivity;
 import com.loosu.sample.utils.DataHelper;
 import com.loosu.sovideoplayer.IjkMediaPlayerTestActivity;
+import com.loosu.sovideoplayer.util.KLog;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.List;
 
-public class VideoListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, IRecyclerItemClickListener {
+public class VideoListFragment extends Fragment implements IRecyclerItemClickListener, OnRefreshListener, OnLoadMoreListener {
     private static final String TAG = "VideoListFragment";
 
-    private SwipeRefreshLayout mRefreshLayout;
+    private static final int PAGE_SIZE = 3;
+
+    private SmartRefreshLayout mRefreshLayout;
     private RecyclerView mViewList;
 
-    private ARecyclerAdapter mAdapter;
+    private AbsVideoAdapter mAdapter;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,7 +65,7 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private void init(Bundle savedInstanceState) {
-        mAdapter = new VideoViewAdapter(getActivity());
+        mAdapter = new SimpleVideoAdapter();
         refreshData();
     }
 
@@ -74,29 +82,18 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
 
     private void initListener(View rootView, Bundle savedInstanceState) {
         mRefreshLayout.setOnRefreshListener(this);
+        mRefreshLayout.setOnLoadMoreListener(this);
         mAdapter.setItemClickListener(this);
     }
 
-    /**
-     * 下拉刷新时回调
-     */
-    @Override
-    public void onRefresh() {
-        mRefreshLayout.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                refreshData();
-                mRefreshLayout.setRefreshing(false);
-            }
-        }, 500);
-    }
 
     /**
      * 列表条目点击
      */
     @Override
     public void onItemClick(RecyclerView parent, int position, RecyclerView.ViewHolder holder, View view) {
-        Intent intent = SimplePlayerActivity.getStartIntent(getContext(), (VideoEntry) mAdapter.getItem(position));
+        VideoEntry item = (VideoEntry) mAdapter.getItem(position);
+        Intent intent = SimplePlayerActivity.getStartIntent(getContext(), item);
         //Intent intent = IjkMediaPlayerTestActivity.getStartIntent(getContext(), mAdapter.getItem(position).getData());
         startActivity(intent);
     }
@@ -110,8 +107,8 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
             return;
         }
 
-        List<VideoEntry> videos = DataHelper.getVideos(context);
-
+        List<VideoEntry> videos = DataHelper.getVideos(context, 0, PAGE_SIZE);
+        logVideos(videos);
         // 加一个假数据
         VideoEntry videoEntry1 = new VideoEntry();
         videoEntry1.setData("http://jzvd.nathen.cn/c6e3dc12a1154626b3476d9bf3bd7266/6b56c5f0dc31428083757a45764763b0-5287d2089db37e62345123a1be272f8b.mp4");
@@ -120,6 +117,32 @@ public class VideoListFragment extends Fragment implements SwipeRefreshLayout.On
         videos.add(0, videoEntry2);
         videos.add(0, videoEntry1);
         mAdapter.setDatas(videos);
+    }
+
+    /**
+     * 下拉刷新时回调
+     */
+    @Override
+    public void onRefresh(RefreshLayout refreshLayout) {
+        mRefreshLayout.finishRefresh(500);
+        refreshData();
+    }
+
+    @Override
+    public void onLoadMore(RefreshLayout refreshLayout) {
+        refreshLayout.finishLoadMore(500);
+        List<VideoEntry> videos = DataHelper.getVideos(getContext(), mAdapter.getItemCount(), PAGE_SIZE);
+        mAdapter.addDatas(videos);
+    }
+
+    private void logVideos(List<VideoEntry> videoEntries) {
+        if (videoEntries == null) {
+            KLog.d(TAG, "videos is null.");
+        } else {
+            for (VideoEntry videoEntry : videoEntries) {
+                KLog.d(TAG, videoEntry.toString());
+            }
+        }
     }
 
 }

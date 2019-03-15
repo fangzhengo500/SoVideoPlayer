@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 
 public class VideoEntry implements Parcelable {
 
+    private long _id;
     private String mTitle;
     private String mDisplayName;
     private String mData;
@@ -26,6 +27,7 @@ public class VideoEntry implements Parcelable {
             return;
         }
 
+        _id = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.VideoColumns._ID));
         mTitle = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.TITLE));
         mDisplayName = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DISPLAY_NAME));
         mData = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATA));
@@ -62,6 +64,10 @@ public class VideoEntry implements Parcelable {
             return new VideoEntry[size];
         }
     };
+
+    public long getId() {
+        return _id;
+    }
 
     public String getTitle() {
         return mTitle;
@@ -146,15 +152,16 @@ public class VideoEntry implements Parcelable {
     @Override
     public String toString() {
         return new StringBuilder().append("VideoEntry{")
+                .append("_id='").append(_id).append('\n')
                 .append("mData='").append(mData).append('\n')
-                .append(" mDataAdded='").append(mDataAdded).append('\n')
+                //.append(" mDataAdded='").append(mDataAdded).append('\n')
                 .append(" mDataModified='").append(mDataModified).append('\n')
                 .append(" mDisplayName='").append(mDisplayName).append('\n')
-                .append(" mHeight='").append(mHeight).append('\n')
-                .append(" mWidth='").append(mWidth).append('\n')
-                .append(" mMimeType='").append(mMimeType).append('\n')
-                .append(" mSize='").append(mSize).append('\n')
-                .append(" mTitle='").append(mTitle).append('\n')
+                //.append(" mHeight='").append(mHeight).append('\n')
+                //.append(" mWidth='").append(mWidth).append('\n')
+                //.append(" mMimeType='").append(mMimeType).append('\n')
+                //.append(" mSize='").append(mSize).append('\n')
+                //.append(" mTitle='").append(mTitle).append('\n')
                 .append(" mDuration='").append(mDuration).append('\n')
                 .append('}')
                 .toString();

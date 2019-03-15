@@ -3,6 +3,7 @@ package com.loosu.sample.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v4.view.PagerAdapter;
 import android.view.ViewGroup;
 
 import com.loosu.sample.R;
@@ -17,7 +18,7 @@ import com.loosu.sovideoplayer.widget.videoview.SoVideoView;
 
 import java.util.List;
 
-public class VideoViewAdapter extends ARecyclerAdapter<VideoEntry> implements SimplePreviewController.Listener {
+public class VideoViewAdapter extends AbsVideoAdapter implements SimplePreviewController.Listener {
 
     private final Activity mActivity;
 
@@ -57,12 +58,6 @@ public class VideoViewAdapter extends ARecyclerAdapter<VideoEntry> implements Si
     }
 
     @Override
-    public void setDatas(List<VideoEntry> datas) {
-        super.setDatas(datas);
-        notifyDataSetChanged();
-    }
-
-    @Override
     public void onFullscreenClick(MediaController controller) {
         final Context context = mActivity;
 
@@ -73,9 +68,11 @@ public class VideoViewAdapter extends ARecyclerAdapter<VideoEntry> implements Si
                 FullScreenHelper.getDefault().fullscreenExit();
             }
         });
-        SoVideoView fullscreenVideo = new SoVideoView(context,true);
+        SoVideoView fullscreenVideo = new SoVideoView(context, true);
         fullscreenVideo.setMediaController(fullscreenController);
 
         FullScreenHelper.getDefault().fullscreen(mActivity, (SoVideoView) controller.getPlayer(), fullscreenVideo);
     }
+
+
 }

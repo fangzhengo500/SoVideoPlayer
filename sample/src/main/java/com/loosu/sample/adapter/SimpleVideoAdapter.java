@@ -14,9 +14,9 @@ import com.loosu.sample.utils.TimeUtil;
 
 import java.util.List;
 
-public class SimpleVideoAdapter extends ARecyclerAdapter<VideoEntry> {
-    public SimpleVideoAdapter(@Nullable List<VideoEntry> datas) {
-        super(datas);
+public class SimpleVideoAdapter extends AbsVideoAdapter {
+    public SimpleVideoAdapter() {
+        super(null);
     }
 
     @Override
