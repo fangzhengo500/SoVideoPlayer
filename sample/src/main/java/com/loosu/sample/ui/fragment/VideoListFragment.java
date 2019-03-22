@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.loosu.sample.R;
 import com.loosu.sample.adapter.AbsVideoAdapter;
@@ -32,6 +34,10 @@ import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class VideoListFragment extends Fragment implements IRecyclerItemClickListener, OnRefreshListener, OnLoadMoreListener {
     private static final String TAG = "VideoListFragment";
@@ -66,7 +72,7 @@ public class VideoListFragment extends Fragment implements IRecyclerItemClickLis
 
     private void init(Bundle savedInstanceState) {
         mAdapter = new SimpleVideoAdapter();
-        refreshData();
+        //refreshData();
     }
 
     private void findView(View rootView, Bundle savedInstanceState) {
@@ -107,7 +113,7 @@ public class VideoListFragment extends Fragment implements IRecyclerItemClickLis
             return;
         }
 
-        List<VideoEntry> videos = DataHelper.getVideos(context, 0, PAGE_SIZE);
+        List<VideoEntry> videos = DataHelper.getVideos(context);
         logVideos(videos);
         // 加一个假数据
         VideoEntry videoEntry1 = new VideoEntry();
@@ -117,6 +123,8 @@ public class VideoListFragment extends Fragment implements IRecyclerItemClickLis
         videos.add(0, videoEntry2);
         videos.add(0, videoEntry1);
         mAdapter.setDatas(videos);
+
+        Toast.makeText(context, "更新 " + videos.size() + " 条数据", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -131,8 +139,8 @@ public class VideoListFragment extends Fragment implements IRecyclerItemClickLis
     @Override
     public void onLoadMore(RefreshLayout refreshLayout) {
         refreshLayout.finishLoadMore(500);
-        List<VideoEntry> videos = DataHelper.getVideos(getContext(), mAdapter.getItemCount(), PAGE_SIZE);
-        mAdapter.addDatas(videos);
+        //List<VideoEntry> videos = DataHelper.getVideos(getContext(), mAdapter.getItemCount(), PAGE_SIZE);
+        //mAdapter.addDatas(videos);
     }
 
     private void logVideos(List<VideoEntry> videoEntries) {
